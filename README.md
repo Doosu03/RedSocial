@@ -63,8 +63,7 @@ Historia 1 completada.
 Las funciones de ver publicaciones ordenadas, reaccionar con “Me gusta” y guardar información en `localStorage` se agregarán en historias posteriores.
 
 ## Autores
-
-Kevin Núñez
-Michael Carranza
-Kevin Picado
-Frank Mora
+1. Kevin Núñez.
+2. Michael Carranza.
+3. Kevin Picado.
+4. Frank Mora
