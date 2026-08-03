@@ -1,4 +1,4 @@
-# Mini Red Social
+# Red Social
 
 Proyecto académico desarrollado con HTML, CSS y JavaScript.
 
