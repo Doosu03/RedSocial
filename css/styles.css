@@ -279,6 +279,17 @@ textarea:focus {
     background-color: #d6e2ff;
 }
 
+.boton-me-gusta.activo {
+    background-color: #3159c7;
+    color: #ffffff;
+
+    border-color: #3159c7;
+}
+
+.boton-me-gusta.activo:hover {
+    background-color: #2447a8;
+}
+
 .boton-me-gusta:active {
     transform: scale(0.96);
 }

@@ -91,7 +91,9 @@ formulario.addEventListener("submit", function (evento) {
     const nuevaPublicacion = {
         id: Date.now(),
         nombre: nombre,
-        mensaje: mensaje
+        mensaje: mensaje,
+        meGusta: 0,
+        meGustaActivo: false
     };
 
 
@@ -179,7 +181,12 @@ function cargarPublicaciones() {
             JSON.parse(publicacionesGuardadas);
 
         if (Array.isArray(publicacionesConvertidas)) {
-            return publicacionesConvertidas;
+
+            // Las publicaciones antiguas no tienen "Me gusta"
+
+            return publicacionesConvertidas.map(
+                normalizarPublicacion
+            );
         }
 
         return [];
@@ -193,6 +200,29 @@ function cargarPublicaciones() {
 
         return [];
     }
+}
+
+
+// Completar los datos que falten en una publicación
+
+function normalizarPublicacion(publicacion) {
+
+    const cantidadMeGusta = Number(publicacion.meGusta);
+
+    return {
+        id: publicacion.id,
+        nombre: publicacion.nombre,
+        mensaje: publicacion.mensaje,
+
+        meGusta:
+            Number.isFinite(cantidadMeGusta) &&
+            cantidadMeGusta > 0
+                ? Math.floor(cantidadMeGusta)
+                : 0,
+
+        meGustaActivo:
+            publicacion.meGustaActivo === true
+    };
 }
 
 
@@ -234,11 +264,105 @@ function mostrarPublicaciones() {
             publicacion.mensaje;
 
 
+        // Zona de acciones con el "Me gusta"
+
+        const acciones =
+            document.createElement("div");
+
+        acciones.classList.add(
+            "acciones-publicacion"
+        );
+
+
+        const contadorMeGusta =
+            document.createElement("span");
+
+        contadorMeGusta.classList.add(
+            "contador-me-gusta"
+        );
+
+        contadorMeGusta.textContent =
+            `${publicacion.meGusta} me gusta`;
+
+
+        const botonMeGusta =
+            document.createElement("button");
+
+        botonMeGusta.type = "button";
+
+        botonMeGusta.classList.add(
+            "boton-me-gusta"
+        );
+
+        if (publicacion.meGustaActivo) {
+
+            botonMeGusta.classList.add("activo");
+
+            botonMeGusta.textContent =
+                "👍 Quitar me gusta";
+
+        } else {
+
+            botonMeGusta.textContent =
+                "👍 Me gusta";
+        }
+
+
+        botonMeGusta.addEventListener(
+            "click",
+            function () {
+                alternarMeGusta(publicacion.id);
+            }
+        );
+
+
+        acciones.appendChild(contadorMeGusta);
+        acciones.appendChild(botonMeGusta);
+
+
         articulo.appendChild(nombreEstudiante);
         articulo.appendChild(textoMensaje);
+        articulo.appendChild(acciones);
 
         listaPublicaciones.appendChild(articulo);
     });
+}
+
+
+// Dar o quitar el "Me gusta" de una publicación
+
+function alternarMeGusta(idPublicacion) {
+
+    const publicacion = publicaciones.find(
+        function (elemento) {
+            return elemento.id === idPublicacion;
+        }
+    );
+
+    if (publicacion === undefined) {
+        return;
+    }
+
+
+    if (publicacion.meGustaActivo) {
+
+        publicacion.meGustaActivo = false;
+
+        if (publicacion.meGusta > 0) {
+            publicacion.meGusta = publicacion.meGusta - 1;
+        }
+
+    } else {
+
+        publicacion.meGustaActivo = true;
+
+        publicacion.meGusta = publicacion.meGusta + 1;
+    }
+
+
+    guardarPublicaciones();
+
+    mostrarPublicaciones();
 }
 
 

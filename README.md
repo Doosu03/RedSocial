@@ -2,13 +2,17 @@
 
 Proyecto académico desarrollado con HTML, CSS y JavaScript.
 
-Actualmente el proyecto implementa la **Historia 1: Publicar un mensaje** y la conservación de publicaciones correspondiente a la **Historia 4**.
+Actualmente el proyecto implementa la **Historia 1: Publicar un mensaje**, la reacción con “Me gusta” de la **Historia 3** y la conservación de publicaciones correspondiente a la **Historia 4**.
 
 ## Historias de usuario implementadas
 
 ### Historia 1: Publicar un mensaje
 
 Como estudiante, quiero escribir mi nombre y un mensaje para compartirlo con mis compañeros.
+
+### Historia 3: Reaccionar con “Me gusta”
+
+Como estudiante, quiero dar “Me gusta” a las publicaciones y ver cuántos “Me gusta” tiene cada una.
 
 ### Historia 4: Conservar la información
 
@@ -23,6 +27,8 @@ Como estudiante, quiero que las publicaciones permanezcan guardadas para no perd
 - Visualización de la publicación en pantalla.
 - Limpieza automática de los campos después de publicar.
 - Contador de caracteres para el mensaje.
+- Botón de “Me gusta” en cada publicación, que se puede quitar al volver a presionarlo.
+- Contador de “Me gusta” visible en cada publicación.
 - Almacenamiento de las publicaciones en LocalStorage.
 - Recuperación automática de las publicaciones al recargar la página.
 - Diseño adaptable para computadoras y teléfonos.
@@ -67,9 +73,9 @@ git clone https://github.com/Doosu03/RedSocial.git
 
 ## Estado del proyecto
 
-Historia 1 completada.
+Historias 1, 3 y 4 completadas.
 
-Las funciones de ver publicaciones ordenadas, reaccionar con “Me gusta” y guardar información en `localStorage` se agregarán en historias posteriores.
+La función de ver las publicaciones ordenadas se agregará en una historia posterior.
 
 ## Autores
 1. Kevin Núñez.
