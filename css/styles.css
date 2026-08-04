@@ -235,3 +235,62 @@ textarea:focus {
         font-size: 27px;
     }
 }
+
+/* Acciones de cada publicación */
+
+.acciones-publicacion {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+
+    margin-top: 16px;
+    padding-top: 14px;
+
+    border-top: 1px solid #dfe5ec;
+}
+
+.contador-me-gusta {
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.boton-me-gusta {
+    padding: 9px 15px;
+
+    background-color: #e8efff;
+    color: #3159c7;
+
+    border: 1px solid #c9d7ff;
+    border-radius: 8px;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s,
+        transform 0.2s;
+}
+
+.boton-me-gusta:hover {
+    background-color: #d6e2ff;
+}
+
+.boton-me-gusta:active {
+    transform: scale(0.96);
+}
+
+@media (max-width: 450px) {
+
+    .acciones-publicacion {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .boton-me-gusta {
+        width: 100%;
+    }
+}

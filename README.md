@@ -2,11 +2,17 @@
 
 Proyecto académico desarrollado con HTML, CSS y JavaScript.
 
-Actualmente el proyecto implementa únicamente la **Historia 1: Publicar un mensaje**.
+Actualmente el proyecto implementa la **Historia 1: Publicar un mensaje** y la conservación de publicaciones correspondiente a la **Historia 4**.
 
-## Historia de usuario
+## Historias de usuario implementadas
+
+### Historia 1: Publicar un mensaje
 
 Como estudiante, quiero escribir mi nombre y un mensaje para compartirlo con mis compañeros.
+
+### Historia 4: Conservar la información
+
+Como estudiante, quiero que las publicaciones permanezcan guardadas para no perderlas al recargar la página.
 
 ## Funcionalidades implementadas
 
@@ -17,6 +23,8 @@ Como estudiante, quiero escribir mi nombre y un mensaje para compartirlo con mis
 - Visualización de la publicación en pantalla.
 - Limpieza automática de los campos después de publicar.
 - Contador de caracteres para el mensaje.
+- Almacenamiento de las publicaciones en LocalStorage.
+- Recuperación automática de las publicaciones al recargar la página.
 - Diseño adaptable para computadoras y teléfonos.
 
 ## Tecnologías utilizadas
@@ -24,6 +32,7 @@ Como estudiante, quiero escribir mi nombre y un mensaje para compartirlo con mis
 - HTML5
 - CSS3
 - JavaScript
+- LocalStorage del navegador
 
 ## Estructura del proyecto
 

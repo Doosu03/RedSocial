@@ -1,4 +1,8 @@
-// Elementos del formulario
+// Clave utilizada para guardar las publicaciones
+const CLAVE_LOCAL_STORAGE = "publicacionesRedSocial";
+
+
+// Elementos del HTML
 
 const formulario = document.getElementById(
     "formulario-publicacion"
@@ -28,11 +32,17 @@ const mensajeVacio = document.getElementById(
 );
 
 
+// Cargar las publicaciones guardadas
+
+let publicaciones = cargarPublicaciones();
+
+mostrarPublicaciones();
+
+
 // Evento para publicar un mensaje
 
 formulario.addEventListener("submit", function (evento) {
 
-    // Evita que la página se recargue
     evento.preventDefault();
 
     const nombre = campoNombre.value.trim();
@@ -42,7 +52,8 @@ formulario.addEventListener("submit", function (evento) {
 
     let formularioValido = true;
 
-    // Validar nombre
+
+    // Validar el nombre
 
     if (nombre === "") {
 
@@ -55,7 +66,8 @@ formulario.addEventListener("submit", function (evento) {
         formularioValido = false;
     }
 
-    // Validar mensaje
+
+    // Validar el mensaje
 
     if (mensaje === "") {
 
@@ -68,17 +80,37 @@ formulario.addEventListener("submit", function (evento) {
         formularioValido = false;
     }
 
-    // Detener el proceso si hay errores
 
     if (!formularioValido) {
         return;
     }
 
-    // Mostrar la publicación
 
-    crearPublicacion(nombre, mensaje);
+    // Crear una nueva publicación
 
-    // Limpiar los campos después de publicar
+    const nuevaPublicacion = {
+        id: Date.now(),
+        nombre: nombre,
+        mensaje: mensaje
+    };
+
+
+    // Agregar la publicación
+
+    publicaciones.push(nuevaPublicacion);
+
+
+    // Guardar la información en LocalStorage
+
+    guardarPublicaciones();
+
+
+    // Mostrar nuevamente todas las publicaciones
+
+    mostrarPublicaciones();
+
+
+    // Limpiar el formulario
 
     formulario.reset();
 
@@ -92,14 +124,20 @@ formulario.addEventListener("submit", function (evento) {
 
 campoMensaje.addEventListener("input", function () {
 
-    const cantidadCaracteres = campoMensaje.value.length;
+    const cantidadCaracteres =
+        campoMensaje.value.length;
 
     contadorCaracteres.textContent =
         `${cantidadCaracteres}/250`;
+
+    quitarError(
+        campoMensaje,
+        errorMensaje
+    );
 });
 
 
-// Quitar el error mientras se escribe el nombre
+// Quitar el error del nombre mientras se escribe
 
 campoNombre.addEventListener("input", function () {
 
@@ -110,43 +148,101 @@ campoNombre.addEventListener("input", function () {
 });
 
 
-// Quitar el error mientras se escribe el mensaje
+// Guardar publicaciones en LocalStorage
 
-campoMensaje.addEventListener("input", function () {
+function guardarPublicaciones() {
 
-    quitarError(
-        campoMensaje,
-        errorMensaje
+    const publicacionesConvertidas =
+        JSON.stringify(publicaciones);
+
+    localStorage.setItem(
+        CLAVE_LOCAL_STORAGE,
+        publicacionesConvertidas
     );
-});
-
-
-// Crear y mostrar una publicación
-
-function crearPublicacion(nombre, mensaje) {
-
-    const publicacion = document.createElement("article");
-
-    publicacion.classList.add("publicacion");
-
-    const nombreEstudiante = document.createElement("h3");
-
-    nombreEstudiante.textContent = nombre;
-
-    const textoMensaje = document.createElement("p");
-
-    textoMensaje.textContent = mensaje;
-
-    publicacion.appendChild(nombreEstudiante);
-    publicacion.appendChild(textoMensaje);
-
-    listaPublicaciones.appendChild(publicacion);
-
-    mensajeVacio.style.display = "none";
 }
 
 
-// Mostrar un mensaje de error
+// Recuperar publicaciones de LocalStorage
+
+function cargarPublicaciones() {
+
+    const publicacionesGuardadas =
+        localStorage.getItem(CLAVE_LOCAL_STORAGE);
+
+    if (publicacionesGuardadas === null) {
+        return [];
+    }
+
+    try {
+
+        const publicacionesConvertidas =
+            JSON.parse(publicacionesGuardadas);
+
+        if (Array.isArray(publicacionesConvertidas)) {
+            return publicacionesConvertidas;
+        }
+
+        return [];
+
+    } catch (error) {
+
+        console.error(
+            "No se pudieron cargar las publicaciones.",
+            error
+        );
+
+        return [];
+    }
+}
+
+
+// Mostrar las publicaciones
+
+function mostrarPublicaciones() {
+
+    listaPublicaciones.innerHTML = "";
+
+    if (publicaciones.length === 0) {
+
+        mensajeVacio.style.display = "block";
+
+        return;
+    }
+
+    mensajeVacio.style.display = "none";
+
+
+    publicaciones.forEach(function (publicacion) {
+
+        const articulo =
+            document.createElement("article");
+
+        articulo.classList.add("publicacion");
+
+
+        const nombreEstudiante =
+            document.createElement("h3");
+
+        nombreEstudiante.textContent =
+            publicacion.nombre;
+
+
+        const textoMensaje =
+            document.createElement("p");
+
+        textoMensaje.textContent =
+            publicacion.mensaje;
+
+
+        articulo.appendChild(nombreEstudiante);
+        articulo.appendChild(textoMensaje);
+
+        listaPublicaciones.appendChild(articulo);
+    });
+}
+
+
+// Mostrar un error
 
 function mostrarError(campo, elementoError, texto) {
 
@@ -156,7 +252,7 @@ function mostrarError(campo, elementoError, texto) {
 }
 
 
-// Quitar el mensaje de error
+// Quitar un error
 
 function quitarError(campo, elementoError) {
 
