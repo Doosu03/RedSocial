@@ -203,13 +203,27 @@ textarea:focus {
     border-radius: 12px;
 }
 
-.publicacion h3 {
-    margin-bottom: 8px;
+.encabezado-publicacion {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
 
+    margin-bottom: 8px;
+}
+
+.publicacion h3 {
     color: #3159c7;
     font-size: 18px;
 
     overflow-wrap: anywhere;
+}
+
+.fecha-publicacion {
+    color: #6b7280;
+    font-size: 13px;
+
+    white-space: nowrap;
 }
 
 .publicacion p {
@@ -295,6 +309,12 @@ textarea:focus {
 }
 
 @media (max-width: 450px) {
+
+    .encabezado-publicacion {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 4px;
+    }
 
     .acciones-publicacion {
         align-items: stretch;

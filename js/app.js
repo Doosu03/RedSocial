@@ -92,6 +92,7 @@ formulario.addEventListener("submit", function (evento) {
         id: Date.now(),
         nombre: nombre,
         mensaje: mensaje,
+        fecha: new Date().toISOString(),
         meGusta: 0,
         meGustaActivo: false
     };
@@ -214,6 +215,8 @@ function normalizarPublicacion(publicacion) {
         nombre: publicacion.nombre,
         mensaje: publicacion.mensaje,
 
+        fecha: obtenerFecha(publicacion),
+
         meGusta:
             Number.isFinite(cantidadMeGusta) &&
             cantidadMeGusta > 0
@@ -223,6 +226,54 @@ function normalizarPublicacion(publicacion) {
         meGustaActivo:
             publicacion.meGustaActivo === true
     };
+}
+
+
+// Recuperar la fecha guardada de una publicación
+
+function obtenerFecha(publicacion) {
+
+    // Publicaciones creadas con la fecha ya incluida
+
+    if (typeof publicacion.fecha === "string") {
+
+        const fechaGuardada =
+            new Date(publicacion.fecha);
+
+        if (!isNaN(fechaGuardada.getTime())) {
+            return publicacion.fecha;
+        }
+    }
+
+
+    // Publicaciones antiguas: el id era la hora de creación
+
+    const fechaDelId = new Date(publicacion.id);
+
+    if (!isNaN(fechaDelId.getTime())) {
+        return fechaDelId.toISOString();
+    }
+
+
+    // No se pudo saber la fecha
+
+    return "";
+}
+
+
+// Escribir la fecha y la hora de forma legible
+
+function formatearFecha(fechaEnTexto) {
+
+    const fecha = new Date(fechaEnTexto);
+
+    return fecha.toLocaleString("es", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+    });
 }
 
 
@@ -255,6 +306,41 @@ function mostrarPublicaciones() {
 
         nombreEstudiante.textContent =
             publicacion.nombre;
+
+
+        // Encabezado con el nombre y la fecha
+
+        const encabezadoPublicacion =
+            document.createElement("div");
+
+        encabezadoPublicacion.classList.add(
+            "encabezado-publicacion"
+        );
+
+        encabezadoPublicacion.appendChild(
+            nombreEstudiante
+        );
+
+
+        if (publicacion.fecha !== "") {
+
+            const fechaPublicacion =
+                document.createElement("time");
+
+            fechaPublicacion.classList.add(
+                "fecha-publicacion"
+            );
+
+            fechaPublicacion.dateTime =
+                publicacion.fecha;
+
+            fechaPublicacion.textContent =
+                formatearFecha(publicacion.fecha);
+
+            encabezadoPublicacion.appendChild(
+                fechaPublicacion
+            );
+        }
 
 
         const textoMensaje =
@@ -320,7 +406,7 @@ function mostrarPublicaciones() {
         acciones.appendChild(botonMeGusta);
 
 
-        articulo.appendChild(nombreEstudiante);
+        articulo.appendChild(encabezadoPublicacion);
         articulo.appendChild(textoMensaje);
         articulo.appendChild(acciones);
 

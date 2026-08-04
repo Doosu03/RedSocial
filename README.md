@@ -27,6 +27,7 @@ Como estudiante, quiero que las publicaciones permanezcan guardadas para no perd
 - Visualización de la publicación en pantalla.
 - Limpieza automática de los campos después de publicar.
 - Contador de caracteres para el mensaje.
+- Fecha y hora de creación visibles en cada publicación.
 - Botón de “Me gusta” en cada publicación, que se puede quitar al volver a presionarlo.
 - Contador de “Me gusta” visible en cada publicación.
 - Almacenamiento de las publicaciones en LocalStorage.
