@@ -270,6 +270,11 @@ textarea:focus {
     font-weight: bold;
 }
 
+.botones-publicacion {
+    display: flex;
+    gap: 10px;
+}
+
 .boton-me-gusta {
     padding: 9px 15px;
 
@@ -308,6 +313,33 @@ textarea:focus {
     transform: scale(0.96);
 }
 
+.boton-eliminar {
+    padding: 9px 15px;
+
+    background-color: #fff1f2;
+    color: #be123c;
+
+    border: 1px solid #fecdd3;
+    border-radius: 8px;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s,
+        transform 0.2s;
+}
+
+.boton-eliminar:hover {
+    background-color: #ffe4e6;
+}
+
+.boton-eliminar:active {
+    transform: scale(0.96);
+}
+
 @media (max-width: 450px) {
 
     .encabezado-publicacion {
@@ -321,7 +353,12 @@ textarea:focus {
         flex-direction: column;
     }
 
-    .boton-me-gusta {
+    .botones-publicacion {
+        flex-direction: column;
+    }
+
+    .boton-me-gusta,
+    .boton-eliminar {
         width: 100%;
     }
 }

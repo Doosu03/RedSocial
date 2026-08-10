@@ -371,6 +371,14 @@ function mostrarPublicaciones() {
             `${publicacion.meGusta} me gusta`;
 
 
+        const grupoBotones =
+            document.createElement("div");
+
+        grupoBotones.classList.add(
+            "botones-publicacion"
+        );
+
+
         const botonMeGusta =
             document.createElement("button");
 
@@ -402,8 +410,30 @@ function mostrarPublicaciones() {
         );
 
 
+        const botonEliminar =
+            document.createElement("button");
+
+        botonEliminar.type = "button";
+
+        botonEliminar.classList.add(
+            "boton-eliminar"
+        );
+
+        botonEliminar.textContent = "Eliminar";
+
+        botonEliminar.addEventListener(
+            "click",
+            function () {
+                eliminarPublicacion(publicacion.id);
+            }
+        );
+
+
+        grupoBotones.appendChild(botonMeGusta);
+        grupoBotones.appendChild(botonEliminar);
+
         acciones.appendChild(contadorMeGusta);
-        acciones.appendChild(botonMeGusta);
+        acciones.appendChild(grupoBotones);
 
 
         articulo.appendChild(encabezadoPublicacion);
@@ -412,6 +442,30 @@ function mostrarPublicaciones() {
 
         listaPublicaciones.appendChild(articulo);
     });
+}
+
+
+// Eliminar una publicacion despues de confirmar
+
+function eliminarPublicacion(idPublicacion) {
+
+    const confirmarEliminacion = window.confirm(
+        "¿Deseas eliminar esta publicación?"
+    );
+
+    if (!confirmarEliminacion) {
+        return;
+    }
+
+    publicaciones = publicaciones.filter(
+        function (publicacion) {
+            return publicacion.id !== idPublicacion;
+        }
+    );
+
+    guardarPublicaciones();
+
+    mostrarPublicaciones();
 }
 
 
