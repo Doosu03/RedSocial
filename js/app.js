@@ -36,6 +36,9 @@ const mensajeVacio = document.getElementById(
 
 let publicaciones = cargarPublicaciones();
 
+// Identifica la publicación que se está editando actualmente
+let idPublicacionEnEdicion = null;
+
 mostrarPublicaciones();
 
 
@@ -343,11 +346,8 @@ function mostrarPublicaciones() {
         }
 
 
-        const textoMensaje =
-            document.createElement("p");
-
-        textoMensaje.textContent =
-            publicacion.mensaje;
+        const contenidoPublicacion =
+            crearContenidoPublicacion(publicacion);
 
 
         // Zona de acciones con el "Me gusta"
@@ -410,6 +410,25 @@ function mostrarPublicaciones() {
         );
 
 
+        const botonEditar =
+            document.createElement("button");
+
+        botonEditar.type = "button";
+
+        botonEditar.classList.add(
+            "boton-editar"
+        );
+
+        botonEditar.textContent = "Editar";
+
+        botonEditar.addEventListener(
+            "click",
+            function () {
+                iniciarEdicion(publicacion.id);
+            }
+        );
+
+
         const botonEliminar =
             document.createElement("button");
 
@@ -430,6 +449,7 @@ function mostrarPublicaciones() {
 
 
         grupoBotones.appendChild(botonMeGusta);
+        grupoBotones.appendChild(botonEditar);
         grupoBotones.appendChild(botonEliminar);
 
         acciones.appendChild(contadorMeGusta);
@@ -437,11 +457,168 @@ function mostrarPublicaciones() {
 
 
         articulo.appendChild(encabezadoPublicacion);
-        articulo.appendChild(textoMensaje);
+        articulo.appendChild(contenidoPublicacion);
         articulo.appendChild(acciones);
 
         listaPublicaciones.appendChild(articulo);
     });
+}
+
+
+// Mostrar el mensaje o el formulario para editarlo
+
+function crearContenidoPublicacion(publicacion) {
+
+    if (publicacion.id !== idPublicacionEnEdicion) {
+
+        const textoMensaje = document.createElement("p");
+
+        textoMensaje.textContent = publicacion.mensaje;
+
+        return textoMensaje;
+    }
+
+
+    const formularioEdicion = document.createElement("form");
+
+    formularioEdicion.classList.add("formulario-edicion");
+    formularioEdicion.noValidate = true;
+
+
+    const etiquetaEdicion = document.createElement("label");
+
+    etiquetaEdicion.textContent = "Editar mensaje";
+
+
+    const campoEdicion = document.createElement("textarea");
+
+    campoEdicion.value = publicacion.mensaje;
+    campoEdicion.maxLength = 250;
+    campoEdicion.rows = 4;
+
+
+    const errorEdicion = document.createElement("small");
+
+    errorEdicion.classList.add("mensaje-error");
+    errorEdicion.setAttribute("aria-live", "polite");
+
+
+    const botonesEdicion = document.createElement("div");
+
+    botonesEdicion.classList.add("botones-edicion");
+
+
+    const botonGuardar = document.createElement("button");
+
+    botonGuardar.type = "submit";
+    botonGuardar.classList.add("boton-guardar");
+    botonGuardar.textContent = "Guardar";
+
+
+    const botonCancelar = document.createElement("button");
+
+    botonCancelar.type = "button";
+    botonCancelar.classList.add("boton-cancelar");
+    botonCancelar.textContent = "Cancelar";
+
+    botonCancelar.addEventListener("click", function () {
+        cancelarEdicion();
+    });
+
+
+    campoEdicion.addEventListener("input", function () {
+        quitarError(campoEdicion, errorEdicion);
+    });
+
+    formularioEdicion.addEventListener("submit", function (evento) {
+        evento.preventDefault();
+
+        guardarEdicion(
+            publicacion.id,
+            campoEdicion,
+            errorEdicion
+        );
+    });
+
+
+    botonesEdicion.appendChild(botonGuardar);
+    botonesEdicion.appendChild(botonCancelar);
+
+    formularioEdicion.appendChild(etiquetaEdicion);
+    formularioEdicion.appendChild(campoEdicion);
+    formularioEdicion.appendChild(errorEdicion);
+    formularioEdicion.appendChild(botonesEdicion);
+
+    setTimeout(function () {
+        campoEdicion.focus();
+        campoEdicion.setSelectionRange(
+            campoEdicion.value.length,
+            campoEdicion.value.length
+        );
+    }, 0);
+
+    return formularioEdicion;
+}
+
+
+// Iniciar la edición de una publicación
+
+function iniciarEdicion(idPublicacion) {
+
+    idPublicacionEnEdicion = idPublicacion;
+
+    mostrarPublicaciones();
+}
+
+
+// Guardar únicamente el mensaje de la publicación seleccionada
+
+function guardarEdicion(idPublicacion, campoEdicion, errorEdicion) {
+
+    const mensajeEditado = campoEdicion.value.trim();
+
+    if (mensajeEditado === "") {
+
+        mostrarError(
+            campoEdicion,
+            errorEdicion,
+            "El mensaje no puede estar vacío."
+        );
+
+        campoEdicion.focus();
+
+        return;
+    }
+
+
+    const publicacion = publicaciones.find(
+        function (elemento) {
+            return elemento.id === idPublicacion;
+        }
+    );
+
+    if (publicacion === undefined) {
+        return;
+    }
+
+
+    publicacion.mensaje = mensajeEditado;
+
+    guardarPublicaciones();
+
+    idPublicacionEnEdicion = null;
+
+    mostrarPublicaciones();
+}
+
+
+// Salir de la edición sin guardar cambios
+
+function cancelarEdicion() {
+
+    idPublicacionEnEdicion = null;
+
+    mostrarPublicaciones();
 }
 
 

@@ -2,7 +2,7 @@
 
 Proyecto académico desarrollado con HTML, CSS y JavaScript.
 
-Actualmente el proyecto implementa la **Historia 1: Publicar un mensaje**, la reacción con “Me gusta” de la **Historia 3** y la conservación de publicaciones correspondiente a la **Historia 4**.
+Actualmente el proyecto implementa la **Historia 1: Publicar un mensaje**, la reacción con “Me gusta” de la **Historia 3**, la conservación de publicaciones de la **Historia 4** y la edición de mensajes de la **Historia 6**.
 
 ## Historias de usuario implementadas
 
@@ -18,6 +18,10 @@ Como estudiante, quiero dar “Me gusta” a las publicaciones y ver cuántos �
 
 Como estudiante, quiero que las publicaciones permanezcan guardadas para no perderlas al recargar la página.
 
+### Historia 6: Editar una publicación
+
+Como estudiante, quiero corregir mi mensaje para solucionar errores sin eliminar la publicación.
+
 ## Funcionalidades implementadas
 
 - Campo para escribir el nombre del estudiante.
@@ -32,6 +36,8 @@ Como estudiante, quiero que las publicaciones permanezcan guardadas para no perd
 - Contador de “Me gusta” visible en cada publicación.
 - Almacenamiento de las publicaciones en LocalStorage.
 - Recuperación automática de las publicaciones al recargar la página.
+- Edición del mensaje de una publicación sin alterar su autor, fecha ni cantidad de “Me gusta”.
+- Validación para impedir que un mensaje editado quede vacío.
 - Diseño adaptable para computadoras y teléfonos.
 
 ## Tecnologías utilizadas
@@ -66,6 +72,14 @@ REDSOCIAL/
 
 También se puede utilizar la extensión **Live Server** de Visual Studio Code.
 
+## Pruebas
+
+Para ejecutar las pruebas mínimas de la Historia 6:
+
+```bash
+node tests/h6.test.js
+```
+
 ## Repositorio
 
 ```bash
@@ -74,7 +88,7 @@ git clone https://github.com/Doosu03/RedSocial.git
 
 ## Estado del proyecto
 
-Historias 1, 3 y 4 completadas.
+Historias 1, 3, 4 y 6 completadas.
 
 La función de ver las publicaciones ordenadas se agregará en una historia posterior.
 

@@ -232,6 +232,63 @@ textarea:focus {
     overflow-wrap: anywhere;
 }
 
+.formulario-edicion {
+    margin-top: 12px;
+    padding: 14px;
+
+    background-color: #ffffff;
+
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+}
+
+.formulario-edicion textarea {
+    min-height: 100px;
+}
+
+.botones-edicion {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.boton-guardar,
+.boton-cancelar,
+.boton-editar {
+    padding: 9px 15px;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.boton-guardar,
+.boton-editar {
+    background-color: #e8efff;
+    color: #3159c7;
+
+    border: 1px solid #c9d7ff;
+}
+
+.boton-guardar:hover,
+.boton-editar:hover {
+    background-color: #d6e2ff;
+}
+
+.boton-cancelar {
+    background-color: #ffffff;
+    color: #4b5563;
+
+    border: 1px solid #cbd5e1;
+}
+
+.boton-cancelar:hover {
+    background-color: #f1f5f9;
+}
+
 /* Diseño para teléfonos */
 
 @media (max-width: 600px) {
@@ -358,7 +415,17 @@ textarea:focus {
     }
 
     .boton-me-gusta,
+    .boton-editar,
     .boton-eliminar {
+        width: 100%;
+    }
+
+    .botones-edicion {
+        flex-direction: column;
+    }
+
+    .boton-guardar,
+    .boton-cancelar {
         width: 100%;
     }
 }
