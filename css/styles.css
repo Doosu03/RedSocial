@@ -128,7 +128,7 @@ textarea:focus {
     gap: 12px;
 }
 
-#contador-caracteres {
+.contador-caracteres {
     margin-top: 6px;
 
     color: #6b7280;

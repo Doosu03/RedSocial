@@ -64,7 +64,7 @@
                         name="mensaje"
                         placeholder="¿Qué deseas compartir?"
                         rows="4"
-                        maxlength="250"
+                        maxlength="200"
                     ></textarea>
 
                     <div class="detalle-mensaje">
@@ -74,8 +74,12 @@
                             class="mensaje-error"
                         ></small>
 
-                        <small id="contador-caracteres">
-                            0/250
+                        <small
+                            id="contador-caracteres"
+                            class="contador-caracteres"
+                            aria-live="polite"
+                        >
+                            200 caracteres restantes
                         </small>
 
                     </div>

@@ -1,5 +1,6 @@
 // Clave utilizada para guardar las publicaciones
 const CLAVE_LOCAL_STORAGE = "publicacionesRedSocial";
+const LIMITE_CARACTERES_MENSAJE = 200;
 
 
 // Elementos del HTML
@@ -120,6 +121,18 @@ formulario.addEventListener("submit", function (evento) {
     }
 
 
+    if (mensaje.length > LIMITE_CARACTERES_MENSAJE) {
+
+        mostrarError(
+            campoMensaje,
+            errorMensaje,
+            "El mensaje no puede superar los 200 caracteres."
+        );
+
+        formularioValido = false;
+    }
+
+
     if (!formularioValido) {
         return;
     }
@@ -162,7 +175,10 @@ formulario.addEventListener("submit", function (evento) {
 
     formulario.reset();
 
-    contadorCaracteres.textContent = "0/250";
+    actualizarContadorCaracteres(
+        campoMensaje,
+        contadorCaracteres
+    );
 
     campoNombre.focus();
 });
@@ -172,17 +188,54 @@ formulario.addEventListener("submit", function (evento) {
 
 campoMensaje.addEventListener("input", function () {
 
-    const cantidadCaracteres =
-        campoMensaje.value.length;
-
-    contadorCaracteres.textContent =
-        `${cantidadCaracteres}/250`;
-
-    quitarError(
+    actualizarContadorCaracteres(
         campoMensaje,
-        errorMensaje
+        contadorCaracteres
     );
+
+    if (campoMensaje.value.length > LIMITE_CARACTERES_MENSAJE) {
+
+        mostrarError(
+            campoMensaje,
+            errorMensaje,
+            "El mensaje no puede superar los 200 caracteres."
+        );
+
+    } else {
+
+        quitarError(
+            campoMensaje,
+            errorMensaje
+        );
+    }
 });
+
+
+// Mostrar cuántos caracteres quedan disponibles
+
+function actualizarContadorCaracteres(campo, contador) {
+
+    const caracteresRestantes =
+        LIMITE_CARACTERES_MENSAJE - campo.value.length;
+
+    if (caracteresRestantes === 1) {
+        contador.textContent = "1 carácter restante";
+        return;
+    }
+
+    if (caracteresRestantes >= 0) {
+        contador.textContent =
+            `${caracteresRestantes} caracteres restantes`;
+        return;
+    }
+
+    const caracteresDeMas = Math.abs(caracteresRestantes);
+
+    contador.textContent =
+        caracteresDeMas === 1
+            ? "1 carácter de más"
+            : `${caracteresDeMas} caracteres de más`;
+}
 
 
 // Quitar el error del nombre mientras se escribe
@@ -1133,7 +1186,7 @@ function crearContenidoPublicacion(publicacion) {
     const campoEdicion = document.createElement("textarea");
 
     campoEdicion.value = publicacion.mensaje;
-    campoEdicion.maxLength = 250;
+    campoEdicion.maxLength = LIMITE_CARACTERES_MENSAJE;
     campoEdicion.rows = 4;
 
 
@@ -1141,6 +1194,25 @@ function crearContenidoPublicacion(publicacion) {
 
     errorEdicion.classList.add("mensaje-error");
     errorEdicion.setAttribute("aria-live", "polite");
+
+
+    const contadorEdicion = document.createElement("small");
+
+    contadorEdicion.classList.add("contador-caracteres");
+    contadorEdicion.setAttribute("aria-live", "polite");
+
+    actualizarContadorCaracteres(
+        campoEdicion,
+        contadorEdicion
+    );
+
+
+    const detalleEdicion = document.createElement("div");
+
+    detalleEdicion.classList.add("detalle-mensaje");
+
+    detalleEdicion.appendChild(errorEdicion);
+    detalleEdicion.appendChild(contadorEdicion);
 
 
     const botonesEdicion = document.createElement("div");
@@ -1167,7 +1239,23 @@ function crearContenidoPublicacion(publicacion) {
 
 
     campoEdicion.addEventListener("input", function () {
-        quitarError(campoEdicion, errorEdicion);
+
+        actualizarContadorCaracteres(
+            campoEdicion,
+            contadorEdicion
+        );
+
+        if (campoEdicion.value.length > LIMITE_CARACTERES_MENSAJE) {
+
+            mostrarError(
+                campoEdicion,
+                errorEdicion,
+                "El mensaje no puede superar los 200 caracteres."
+            );
+
+        } else {
+            quitarError(campoEdicion, errorEdicion);
+        }
     });
 
     formularioEdicion.addEventListener("submit", function (evento) {
@@ -1186,7 +1274,7 @@ function crearContenidoPublicacion(publicacion) {
 
     formularioEdicion.appendChild(etiquetaEdicion);
     formularioEdicion.appendChild(campoEdicion);
-    formularioEdicion.appendChild(errorEdicion);
+    formularioEdicion.appendChild(detalleEdicion);
     formularioEdicion.appendChild(botonesEdicion);
 
     setTimeout(function () {
@@ -1223,6 +1311,20 @@ function guardarEdicion(idPublicacion, campoEdicion, errorEdicion) {
             campoEdicion,
             errorEdicion,
             "El mensaje no puede estar vacío."
+        );
+
+        campoEdicion.focus();
+
+        return;
+    }
+
+
+    if (mensajeEditado.length > LIMITE_CARACTERES_MENSAJE) {
+
+        mostrarError(
+            campoEdicion,
+            errorEdicion,
+            "El mensaje no puede superar los 200 caracteres."
         );
 
         campoEdicion.focus();
