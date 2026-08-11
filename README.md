@@ -2,7 +2,7 @@
 
 Proyecto académico desarrollado con HTML, CSS y JavaScript.
 
-Actualmente el proyecto implementa la **Historia 1: Publicar un mensaje**, la reacción con “Me gusta” de la **Historia 3**, la conservación de publicaciones de la **Historia 4**, la edición de mensajes de la **Historia 6**, los comentarios de la **Historia 7** y la búsqueda de publicaciones de la **Historia 8**.
+Actualmente el proyecto implementa la **Historia 1: Publicar un mensaje**, la reacción con “Me gusta” de la **Historia 3**, la conservación de publicaciones de la **Historia 4**, la edición de mensajes de la **Historia 6**, los comentarios de la **Historia 7**, la búsqueda de publicaciones de la **Historia 8** y el ordenamiento de la **Historia 9**.
 
 ## Historias de usuario implementadas
 
@@ -30,6 +30,10 @@ Como estudiante, quiero comentar una publicación para participar en la conversa
 
 Como estudiante, quiero buscar por autor o contenido para encontrar rápidamente una publicación.
 
+### Historia 9: Ordenar publicaciones
+
+Como estudiante, quiero ordenar las publicaciones para ver primero las más recientes o las más populares.
+
 ## Funcionalidades implementadas
 
 - Campo para escribir el nombre del estudiante.
@@ -55,6 +59,8 @@ Como estudiante, quiero buscar por autor o contenido para encontrar rápidamente
 - Búsqueda sin distinguir mayúsculas de minúsculas.
 - Botón “Limpiar” y campo vacío para volver a ver todas las publicaciones.
 - Aviso al usuario cuando la búsqueda no encuentra coincidencias.
+- Selector para ordenar por publicaciones recientes, antiguas o con más “Me gusta”.
+- Ordenamiento compatible con los resultados de búsqueda sin modificar los datos guardados.
 - Diseño adaptable para computadoras y teléfonos.
 
 ## Tecnologías utilizadas
@@ -109,6 +115,12 @@ Para ejecutar las pruebas mínimas de la Historia 8:
 node tests/h8.test.js
 ```
 
+Para ejecutar las pruebas mínimas de la Historia 9:
+
+```bash
+node tests/h9.test.js
+```
+
 ## Repositorio
 
 ```bash
@@ -117,9 +129,7 @@ git clone https://github.com/Doosu03/RedSocial.git
 
 ## Estado del proyecto
 
-Historias 1, 3, 4, 6, 7 y 8 completadas.
-
-La función de ver las publicaciones ordenadas se agregará en una historia posterior.
+Historias 1, 3, 4, 6, 7, 8 y 9 completadas.
 
 ## Autores
 1. Kevin Núñez.

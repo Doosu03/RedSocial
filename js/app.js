@@ -45,6 +45,10 @@ const resumenBusqueda = document.getElementById(
     "resumen-busqueda"
 );
 
+const selectorOrden = document.getElementById(
+    "orden-publicaciones"
+);
+
 
 // Cargar las publicaciones guardadas
 
@@ -55,6 +59,9 @@ let idPublicacionEnEdicion = null;
 
 // Texto que se está buscando actualmente
 let terminoBusqueda = "";
+
+// El selector siempre inicia mostrando primero las más recientes
+let criterioOrden = "recientes";
 
 mostrarPublicaciones();
 
@@ -211,6 +218,16 @@ botonLimpiarBusqueda.addEventListener("click", function () {
 });
 
 
+// Cambiar el orden sin modificar las publicaciones guardadas
+
+selectorOrden.addEventListener("change", function () {
+
+    criterioOrden = selectorOrden.value;
+
+    mostrarPublicaciones();
+});
+
+
 // Dejar el campo de búsqueda vacío
 
 function reiniciarBusqueda() {
@@ -258,6 +275,51 @@ function filtrarPublicaciones() {
     return publicaciones.filter(function (publicacion) {
         return coincideConBusqueda(publicacion, textoBuscado);
     });
+}
+
+
+// Ordenar una copia de las publicaciones visibles
+
+function ordenarPublicaciones(publicacionesParaOrdenar) {
+
+    const publicacionesOrdenadas =
+        publicacionesParaOrdenar.slice();
+
+    publicacionesOrdenadas.sort(function (primera, segunda) {
+
+        const fechaPrimera = obtenerTiempo(primera.fecha);
+        const fechaSegunda = obtenerTiempo(segunda.fecha);
+
+        if (criterioOrden === "antiguas") {
+            return fechaPrimera - fechaSegunda;
+        }
+
+        if (criterioOrden === "mas-gustadas") {
+
+            const diferenciaMeGusta =
+                segunda.meGusta - primera.meGusta;
+
+            // En un empate se muestra primero la más reciente
+
+            return diferenciaMeGusta !== 0
+                ? diferenciaMeGusta
+                : fechaSegunda - fechaPrimera;
+        }
+
+        return fechaSegunda - fechaPrimera;
+    });
+
+    return publicacionesOrdenadas;
+}
+
+
+// Convertir una fecha guardada en un valor comparable
+
+function obtenerTiempo(fecha) {
+
+    const tiempo = new Date(fecha).getTime();
+
+    return Number.isFinite(tiempo) ? tiempo : 0;
 }
 
 
@@ -465,7 +527,9 @@ function mostrarPublicaciones() {
 
     listaPublicaciones.innerHTML = "";
 
-    const publicacionesVisibles = filtrarPublicaciones();
+    const publicacionesVisibles = ordenarPublicaciones(
+        filtrarPublicaciones()
+    );
 
     actualizarMensajesDeLista(publicacionesVisibles.length);
 

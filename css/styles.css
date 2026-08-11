@@ -181,6 +181,39 @@ textarea:focus {
 
 /* Búsqueda de publicaciones */
 
+.control-orden {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+
+    margin-bottom: 18px;
+}
+
+.control-orden label {
+    margin-bottom: 0;
+    white-space: nowrap;
+}
+
+.control-orden select {
+    padding: 10px 36px 10px 12px;
+
+    background-color: #ffffff;
+    color: #1f2937;
+
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+
+    font: inherit;
+    cursor: pointer;
+}
+
+.control-orden select:focus {
+    border-color: #3159c7;
+    box-shadow: 0 0 0 3px rgba(49, 89, 199, 0.13);
+    outline: none;
+}
+
 .formulario-busqueda {
     margin-bottom: 18px;
 }
@@ -566,6 +599,15 @@ textarea:focus {
 }
 
 @media (max-width: 450px) {
+
+    .control-orden {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .control-orden select {
+        width: 100%;
+    }
 
     .encabezado-publicacion {
         align-items: flex-start;

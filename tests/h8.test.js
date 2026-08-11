@@ -222,7 +222,7 @@ function escribirBusqueda(elementos, texto) {
 
     assert.deepEqual(
         nombresVisibles(elementos),
-        ["Luis Ramirez", "Mariana Solis"]
+        ["Mariana Solis", "Luis Ramirez"]
     );
     assert.equal(
         elementos.get("resumen-busqueda").textContent,
@@ -247,7 +247,7 @@ function escribirBusqueda(elementos, texto) {
 
     assert.deepEqual(
         resultadoMinusculas,
-        ["Ana Morales", "Mariana Solis"]
+        ["Mariana Solis", "Ana Morales"]
     );
     assert.deepEqual(resultadoMayusculas, resultadoMinusculas);
     assert.deepEqual(resultadoMezclado, resultadoMinusculas);
@@ -290,7 +290,7 @@ function escribirBusqueda(elementos, texto) {
 
     assert.deepEqual(
         nombresVisibles(elementos),
-        ["Ana Morales", "Luis Ramirez", "Mariana Solis"]
+        ["Mariana Solis", "Luis Ramirez", "Ana Morales"]
     );
     assert.equal(elementos.get("mensaje-vacio").style.display, "none");
     assert.equal(elementos.get("resumen-busqueda").textContent, "");
@@ -306,7 +306,7 @@ function escribirBusqueda(elementos, texto) {
     assert.equal(elementos.get("buscador").value, "");
     assert.deepEqual(
         nombresVisibles(elementos),
-        ["Ana Morales", "Luis Ramirez", "Mariana Solis"]
+        ["Mariana Solis", "Luis Ramirez", "Ana Morales"]
     );
 }
 
@@ -351,7 +351,7 @@ function escribirBusqueda(elementos, texto) {
     assert.equal(elementos.get("buscador").value, "");
     assert.deepEqual(
         nombresVisibles(elementos),
-        ["Ana Morales", "Luis Ramirez", "Mariana Solis", "Sofia"]
+        ["Sofia", "Mariana Solis", "Luis Ramirez", "Ana Morales"]
     );
 }
 

@@ -255,10 +255,20 @@ function comentar(contexto, id, nombre, texto) {
     });
 
     const listaPublicaciones = elementos.get("lista-publicaciones");
+    const publicacionUno = listaPublicaciones.children.find(
+        function (articulo) {
+            return articulo.children[0].children[0].textContent === "Ana";
+        }
+    );
+    const publicacionDos = listaPublicaciones.children.find(
+        function (articulo) {
+            return articulo.children[0].children[0].textContent === "Luis";
+        }
+    );
     const primeraSeccionComentarios =
-        listaPublicaciones.children[0].children[3];
+        publicacionUno.children[3];
     const segundaSeccionComentarios =
-        listaPublicaciones.children[1].children[3];
+        publicacionDos.children[3];
     const primeraListaComentarios =
         primeraSeccionComentarios.children[1];
     const segundaListaComentarios =
