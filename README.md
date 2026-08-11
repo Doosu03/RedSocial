@@ -2,7 +2,7 @@
 
 Proyecto académico desarrollado con HTML, CSS y JavaScript.
 
-Actualmente el proyecto implementa la **Historia 1: Publicar un mensaje**, la reacción con “Me gusta” de la **Historia 3**, la conservación de publicaciones de la **Historia 4**, la edición de mensajes de la **Historia 6**, los comentarios de la **Historia 7**, la búsqueda de publicaciones de la **Historia 8**, el ordenamiento de la **Historia 9** y la edición y eliminación de comentarios de la **Historia 12**.
+Actualmente el proyecto implementa las historias 1, 3, 4 y 6 a 13, incluida la edición de publicaciones y comentarios, búsqueda, ordenamiento y reacciones múltiples.
 
 ## Historias de usuario implementadas
 
@@ -38,6 +38,10 @@ Como estudiante, quiero ordenar las publicaciones para ver primero las más reci
 
 Como estudiante, quiero editar o eliminar mis comentarios para corregir errores o retirar contenido que ya no deseo mostrar.
 
+### Historia 13: Reacciones múltiples
+
+Como estudiante, quiero reaccionar de distintas maneras a una publicación para expresar mejor mi opinión.
+
 ## Funcionalidades implementadas
 
 - Campo para escribir el nombre del estudiante.
@@ -48,8 +52,10 @@ Como estudiante, quiero editar o eliminar mis comentarios para corregir errores 
 - Limpieza automática de los campos después de publicar.
 - Contador de caracteres para el mensaje.
 - Fecha y hora de creación visibles en cada publicación.
-- Botón de “Me gusta” en cada publicación, que se puede quitar al volver a presionarlo.
-- Contador de “Me gusta” visible en cada publicación.
+- Botones de “Me gusta”, “Me encanta” y “Me divierte” en cada publicación.
+- Contadores independientes y persistentes para cada tipo de reacción.
+- Migración automática de publicaciones antiguas que solo contienen “Me gusta”.
+- Resumen de actividad con los totales de las tres reacciones.
 - Almacenamiento de las publicaciones en LocalStorage.
 - Recuperación automática de las publicaciones al recargar la página.
 - Edición del mensaje de una publicación sin alterar su autor, fecha ni cantidad de “Me gusta”.
@@ -141,6 +147,12 @@ Para ejecutar las pruebas mínimas de la Historia 12:
 node tests/h12.test.js
 ```
 
+Para ejecutar las pruebas mínimas de la Historia 13:
+
+```bash
+node tests/h13.test.js
+```
+
 ## Repositorio
 
 ```bash
@@ -149,7 +161,7 @@ git clone https://github.com/Doosu03/RedSocial.git
 
 ## Estado del proyecto
 
-Historias 1, 3, 4, 6, 7, 8, 9, 10, 11 y 12 completadas.
+Historias 1, 3, 4, 6, 7, 8, 9, 10, 11, 12 y 13 completadas.
 
 ## Autores
 1. Kevin Núñez.

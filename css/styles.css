@@ -181,7 +181,7 @@ textarea:focus {
 
 .resumen-actividad {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 12px;
 
     margin-bottom: 18px;
@@ -466,6 +466,19 @@ textarea:focus {
     font-weight: bold;
 }
 
+.contadores-reacciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+}
+
+.contador-reaccion {
+    color: #6b7280;
+    font-size: 13px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
 .botones-publicacion {
     display: flex;
     gap: 10px;
@@ -488,6 +501,24 @@ textarea:focus {
     transition:
         background-color 0.2s,
         transform 0.2s;
+}
+
+.boton-reaccion {
+    padding: 9px 12px;
+
+    background-color: #e8efff;
+    color: #3159c7;
+
+    border: 1px solid #c9d7ff;
+    border-radius: 8px;
+
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.boton-reaccion:hover {
+    background-color: #d6e2ff;
 }
 
 .boton-me-gusta:hover {
@@ -727,6 +758,7 @@ textarea:focus {
     }
 
     .boton-me-gusta,
+    .boton-reaccion,
     .boton-editar,
     .boton-eliminar {
         width: 100%;

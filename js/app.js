@@ -59,6 +59,14 @@ const totalMeGusta = document.getElementById(
     "total-me-gusta"
 );
 
+const totalMeEncanta = document.getElementById(
+    "total-me-encanta"
+);
+
+const totalMeDivierte = document.getElementById(
+    "total-me-divierte"
+);
+
 const totalComentarios = document.getElementById(
     "total-comentarios"
 );
@@ -149,8 +157,11 @@ formulario.addEventListener("submit", function (evento) {
         nombre: nombre,
         mensaje: mensaje,
         fecha: new Date().toISOString(),
-        meGusta: 0,
-        meGustaActivo: false,
+        reacciones: {
+            meGusta: 0,
+            meEncanta: 0,
+            meDivierte: 0
+        },
         comentarios: []
     };
 
@@ -366,7 +377,8 @@ function ordenarPublicaciones(publicacionesParaOrdenar) {
         if (criterioOrden === "mas-gustadas") {
 
             const diferenciaMeGusta =
-                segunda.meGusta - primera.meGusta;
+                obtenerReacciones(segunda).meGusta -
+                obtenerReacciones(primera).meGusta;
 
             // En un empate se muestra primero la más reciente
 
@@ -455,12 +467,11 @@ function actualizarResumenActividad() {
     const resumen = publicaciones.reduce(
         function (totales, publicacion) {
 
-            const cantidadMeGusta = Number(publicacion.meGusta);
+            const reacciones = obtenerReacciones(publicacion);
 
-            totales.meGusta +=
-                Number.isFinite(cantidadMeGusta)
-                    ? cantidadMeGusta
-                    : 0;
+            totales.meGusta += reacciones.meGusta;
+            totales.meEncanta += reacciones.meEncanta;
+            totales.meDivierte += reacciones.meDivierte;
 
             totales.comentarios +=
                 Array.isArray(publicacion.comentarios)
@@ -471,12 +482,16 @@ function actualizarResumenActividad() {
         },
         {
             meGusta: 0,
+            meEncanta: 0,
+            meDivierte: 0,
             comentarios: 0
         }
     );
 
     totalPublicaciones.textContent = publicaciones.length;
     totalMeGusta.textContent = resumen.meGusta;
+    totalMeEncanta.textContent = resumen.meEncanta;
+    totalMeDivierte.textContent = resumen.meDivierte;
     totalComentarios.textContent = resumen.comentarios;
 }
 
@@ -538,8 +553,6 @@ function cargarPublicaciones() {
 
 function normalizarPublicacion(publicacion) {
 
-    const cantidadMeGusta = Number(publicacion.meGusta);
-
     return {
         id: publicacion.id,
         nombre: publicacion.nombre,
@@ -547,17 +560,61 @@ function normalizarPublicacion(publicacion) {
 
         fecha: obtenerFecha(publicacion),
 
-        meGusta:
-            Number.isFinite(cantidadMeGusta) &&
-            cantidadMeGusta > 0
-                ? Math.floor(cantidadMeGusta)
-                : 0,
-
-        meGustaActivo:
-            publicacion.meGustaActivo === true,
+        reacciones: normalizarReacciones(publicacion),
 
         comentarios: normalizarComentarios(publicacion)
     };
+}
+
+
+// Completar los tres contadores y migrar publicaciones antiguas
+
+function normalizarReacciones(publicacion) {
+
+    const reaccionesGuardadas =
+        publicacion.reacciones !== null &&
+        typeof publicacion.reacciones === "object"
+            ? publicacion.reacciones
+            : {};
+
+    return {
+        meGusta: normalizarCantidadReaccion(
+            reaccionesGuardadas.meGusta !== undefined
+                ? reaccionesGuardadas.meGusta
+                : publicacion.meGusta
+        ),
+        meEncanta: normalizarCantidadReaccion(
+            reaccionesGuardadas.meEncanta
+        ),
+        meDivierte: normalizarCantidadReaccion(
+            reaccionesGuardadas.meDivierte
+        )
+    };
+}
+
+
+function normalizarCantidadReaccion(cantidad) {
+
+    const numero = Number(cantidad);
+
+    return Number.isFinite(numero) && numero > 0
+        ? Math.floor(numero)
+        : 0;
+}
+
+
+// Garantizar la estructura incluso en datos antiguos usados en memoria
+
+function obtenerReacciones(publicacion) {
+
+    if (
+        publicacion.reacciones === null ||
+        typeof publicacion.reacciones !== "object"
+    ) {
+        publicacion.reacciones = normalizarReacciones(publicacion);
+    }
+
+    return publicacion.reacciones;
 }
 
 
@@ -778,7 +835,7 @@ function mostrarPublicaciones() {
             crearContenidoPublicacion(publicacion);
 
 
-        // Zona de acciones con el "Me gusta"
+        // Zona de acciones y reacciones
 
         const acciones =
             document.createElement("div");
@@ -788,15 +845,30 @@ function mostrarPublicaciones() {
         );
 
 
-        const contadorMeGusta =
-            document.createElement("span");
+        const reacciones = obtenerReacciones(publicacion);
 
-        contadorMeGusta.classList.add(
-            "contador-me-gusta"
+        const contadoresReacciones =
+            document.createElement("div");
+
+        contadoresReacciones.classList.add(
+            "contadores-reacciones"
         );
 
-        contadorMeGusta.textContent =
-            `${publicacion.meGusta} me gusta`;
+        [
+            ["👍", "Me gusta", reacciones.meGusta],
+            ["❤️", "Me encanta", reacciones.meEncanta],
+            ["😄", "Me divierte", reacciones.meDivierte]
+        ].forEach(function (datosReaccion) {
+
+            const contador = document.createElement("span");
+
+            contador.classList.add("contador-reaccion");
+            contador.textContent =
+                `${datosReaccion[0]} ${datosReaccion[1]}: ` +
+                datosReaccion[2];
+
+            contadoresReacciones.appendChild(contador);
+        });
 
 
         const grupoBotones =
@@ -807,35 +879,24 @@ function mostrarPublicaciones() {
         );
 
 
-        const botonMeGusta =
-            document.createElement("button");
+        [
+            ["meGusta", "👍 Me gusta"],
+            ["meEncanta", "❤️ Me encanta"],
+            ["meDivierte", "😄 Me divierte"]
+        ].forEach(function (datosReaccion) {
 
-        botonMeGusta.type = "button";
+            const botonReaccion = document.createElement("button");
 
-        botonMeGusta.classList.add(
-            "boton-me-gusta"
-        );
+            botonReaccion.type = "button";
+            botonReaccion.classList.add("boton-reaccion");
+            botonReaccion.textContent = datosReaccion[1];
 
-        if (publicacion.meGustaActivo) {
+            botonReaccion.addEventListener("click", function () {
+                agregarReaccion(publicacion.id, datosReaccion[0]);
+            });
 
-            botonMeGusta.classList.add("activo");
-
-            botonMeGusta.textContent =
-                "👍 Quitar me gusta";
-
-        } else {
-
-            botonMeGusta.textContent =
-                "👍 Me gusta";
-        }
-
-
-        botonMeGusta.addEventListener(
-            "click",
-            function () {
-                alternarMeGusta(publicacion.id);
-            }
-        );
+            grupoBotones.appendChild(botonReaccion);
+        });
 
 
         const botonEditar =
@@ -876,11 +937,10 @@ function mostrarPublicaciones() {
         );
 
 
-        grupoBotones.appendChild(botonMeGusta);
         grupoBotones.appendChild(botonEditar);
         grupoBotones.appendChild(botonEliminar);
 
-        acciones.appendChild(contadorMeGusta);
+        acciones.appendChild(contadoresReacciones);
         acciones.appendChild(grupoBotones);
 
 
@@ -1755,9 +1815,9 @@ function eliminarPublicacion(idPublicacion) {
 }
 
 
-// Dar o quitar el "Me gusta" de una publicación
+// Aumentar una reacción de la publicación seleccionada
 
-function alternarMeGusta(idPublicacion) {
+function agregarReaccion(idPublicacion, tipoReaccion) {
 
     const publicacion = buscarPublicacion(idPublicacion);
 
@@ -1766,25 +1826,32 @@ function alternarMeGusta(idPublicacion) {
     }
 
 
-    if (publicacion.meGustaActivo) {
-
-        publicacion.meGustaActivo = false;
-
-        if (publicacion.meGusta > 0) {
-            publicacion.meGusta = publicacion.meGusta - 1;
-        }
-
-    } else {
-
-        publicacion.meGustaActivo = true;
-
-        publicacion.meGusta = publicacion.meGusta + 1;
+    if (
+        tipoReaccion !== "meGusta" &&
+        tipoReaccion !== "meEncanta" &&
+        tipoReaccion !== "meDivierte"
+    ) {
+        return;
     }
+
+
+    const reacciones = obtenerReacciones(publicacion);
+
+    reacciones[tipoReaccion] =
+        normalizarCantidadReaccion(reacciones[tipoReaccion]) + 1;
 
 
     guardarPublicaciones();
 
     mostrarPublicaciones();
+}
+
+
+// Compatibilidad con código anterior que aplicaba Me gusta
+
+function alternarMeGusta(idPublicacion) {
+
+    agregarReaccion(idPublicacion, "meGusta");
 }
 
 
