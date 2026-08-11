@@ -49,6 +49,18 @@ const selectorOrden = document.getElementById(
     "orden-publicaciones"
 );
 
+const totalPublicaciones = document.getElementById(
+    "total-publicaciones"
+);
+
+const totalMeGusta = document.getElementById(
+    "total-me-gusta"
+);
+
+const totalComentarios = document.getElementById(
+    "total-comentarios"
+);
+
 
 // Cargar las publicaciones guardadas
 
@@ -379,6 +391,39 @@ function actualizarMensajesDeLista(cantidadVisible) {
 }
 
 
+// Calcular y mostrar la actividad completa de la red social
+
+function actualizarResumenActividad() {
+
+    const resumen = publicaciones.reduce(
+        function (totales, publicacion) {
+
+            const cantidadMeGusta = Number(publicacion.meGusta);
+
+            totales.meGusta +=
+                Number.isFinite(cantidadMeGusta)
+                    ? cantidadMeGusta
+                    : 0;
+
+            totales.comentarios +=
+                Array.isArray(publicacion.comentarios)
+                    ? publicacion.comentarios.length
+                    : 0;
+
+            return totales;
+        },
+        {
+            meGusta: 0,
+            comentarios: 0
+        }
+    );
+
+    totalPublicaciones.textContent = publicaciones.length;
+    totalMeGusta.textContent = resumen.meGusta;
+    totalComentarios.textContent = resumen.comentarios;
+}
+
+
 // Guardar publicaciones en LocalStorage
 
 function guardarPublicaciones() {
@@ -526,6 +571,8 @@ function formatearFecha(fechaEnTexto) {
 function mostrarPublicaciones() {
 
     listaPublicaciones.innerHTML = "";
+
+    actualizarResumenActividad();
 
     const publicacionesVisibles = ordenarPublicaciones(
         filtrarPublicaciones()

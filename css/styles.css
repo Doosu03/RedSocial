@@ -179,6 +179,38 @@ textarea:focus {
     font-size: 24px;
 }
 
+.resumen-actividad {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+
+    margin-bottom: 18px;
+}
+
+.dato-resumen {
+    padding: 14px;
+
+    background-color: #f8fafc;
+
+    border: 1px solid #dfe5ec;
+    border-radius: 10px;
+}
+
+.dato-resumen strong {
+    display: block;
+    margin-bottom: 4px;
+
+    color: #3159c7;
+    font-size: 26px;
+    line-height: 1;
+}
+
+.dato-resumen span {
+    color: #6b7280;
+    font-size: 13px;
+    font-weight: bold;
+}
+
 /* Búsqueda de publicaciones */
 
 .control-orden {
@@ -407,6 +439,10 @@ textarea:focus {
 
     .encabezado h1 {
         font-size: 27px;
+    }
+
+    .resumen-actividad {
+        grid-template-columns: 1fr;
     }
 }
 
