@@ -2,7 +2,7 @@
 
 Proyecto académico desarrollado con HTML, CSS y JavaScript.
 
-Actualmente el proyecto implementa la **Historia 1: Publicar un mensaje**, la reacción con “Me gusta” de la **Historia 3**, la conservación de publicaciones de la **Historia 4** y la edición de mensajes de la **Historia 6**.
+Actualmente el proyecto implementa la **Historia 1: Publicar un mensaje**, la reacción con “Me gusta” de la **Historia 3**, la conservación de publicaciones de la **Historia 4**, la edición de mensajes de la **Historia 6** y los comentarios de la **Historia 7**.
 
 ## Historias de usuario implementadas
 
@@ -22,6 +22,10 @@ Como estudiante, quiero que las publicaciones permanezcan guardadas para no perd
 
 Como estudiante, quiero corregir mi mensaje para solucionar errores sin eliminar la publicación.
 
+### Historia 7: Comentar publicaciones
+
+Como estudiante, quiero comentar una publicación para participar en la conversación.
+
 ## Funcionalidades implementadas
 
 - Campo para escribir el nombre del estudiante.
@@ -38,6 +42,10 @@ Como estudiante, quiero corregir mi mensaje para solucionar errores sin eliminar
 - Recuperación automática de las publicaciones al recargar la página.
 - Edición del mensaje de una publicación sin alterar su autor, fecha ni cantidad de “Me gusta”.
 - Validación para impedir que un mensaje editado quede vacío.
+- Formulario de nombre y comentario dentro de cada publicación.
+- Validación de los campos obligatorios al comentar.
+- Visualización del autor, texto, fecha y hora de cada comentario.
+- Conservación de los comentarios en su publicación correspondiente al recargar la página.
 - Diseño adaptable para computadoras y teléfonos.
 
 ## Tecnologías utilizadas
@@ -80,6 +88,12 @@ Para ejecutar las pruebas mínimas de la Historia 6:
 node tests/h6.test.js
 ```
 
+Para ejecutar las pruebas mínimas de la Historia 7:
+
+```bash
+node tests/h7.test.js
+```
+
 ## Repositorio
 
 ```bash
@@ -88,7 +102,7 @@ git clone https://github.com/Doosu03/RedSocial.git
 
 ## Estado del proyecto
 
-Historias 1, 3, 4 y 6 completadas.
+Historias 1, 3, 4, 6 y 7 completadas.
 
 La función de ver las publicaciones ordenadas se agregará en una historia posterior.
 

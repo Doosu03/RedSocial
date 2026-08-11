@@ -97,7 +97,8 @@ formulario.addEventListener("submit", function (evento) {
         mensaje: mensaje,
         fecha: new Date().toISOString(),
         meGusta: 0,
-        meGustaActivo: false
+        meGustaActivo: false,
+        comentarios: []
     };
 
 
@@ -227,8 +228,24 @@ function normalizarPublicacion(publicacion) {
                 : 0,
 
         meGustaActivo:
-            publicacion.meGustaActivo === true
+            publicacion.meGustaActivo === true,
+
+        comentarios: obtenerComentarios(publicacion)
     };
+}
+
+
+// Recuperar los comentarios de una publicación
+
+function obtenerComentarios(publicacion) {
+
+    if (Array.isArray(publicacion.comentarios)) {
+        return publicacion.comentarios;
+    }
+
+    // Las publicaciones antiguas no tienen comentarios
+
+    return [];
 }
 
 
@@ -456,12 +473,363 @@ function mostrarPublicaciones() {
         acciones.appendChild(grupoBotones);
 
 
+        const seccionComentarios =
+            crearSeccionComentarios(publicacion);
+
+
         articulo.appendChild(encabezadoPublicacion);
         articulo.appendChild(contenidoPublicacion);
         articulo.appendChild(acciones);
+        articulo.appendChild(seccionComentarios);
 
         listaPublicaciones.appendChild(articulo);
     });
+}
+
+
+// Crear la sección de comentarios de una publicación
+
+function crearSeccionComentarios(publicacion) {
+
+    const seccionComentarios =
+        document.createElement("section");
+
+    seccionComentarios.classList.add(
+        "seccion-comentarios"
+    );
+
+
+    const tituloComentarios =
+        document.createElement("h4");
+
+    tituloComentarios.textContent = "Comentarios";
+
+
+    const listaComentarios =
+        document.createElement("div");
+
+    listaComentarios.classList.add(
+        "lista-comentarios"
+    );
+
+
+    const comentarios = obtenerComentarios(publicacion);
+
+    if (comentarios.length === 0) {
+
+        const mensajeSinComentarios =
+            document.createElement("p");
+
+        mensajeSinComentarios.classList.add(
+            "mensaje-sin-comentarios"
+        );
+
+        mensajeSinComentarios.textContent =
+            "Aún no hay comentarios.";
+
+        listaComentarios.appendChild(
+            mensajeSinComentarios
+        );
+
+    } else {
+
+        comentarios.forEach(function (comentario) {
+            listaComentarios.appendChild(
+                crearComentario(comentario)
+            );
+        });
+    }
+
+
+    seccionComentarios.appendChild(tituloComentarios);
+    seccionComentarios.appendChild(listaComentarios);
+    seccionComentarios.appendChild(
+        crearFormularioComentario(publicacion)
+    );
+
+    return seccionComentarios;
+}
+
+
+// Crear un comentario guardado
+
+function crearComentario(comentario) {
+
+    const articuloComentario =
+        document.createElement("article");
+
+    articuloComentario.classList.add("comentario");
+
+
+    const encabezadoComentario =
+        document.createElement("div");
+
+    encabezadoComentario.classList.add(
+        "encabezado-comentario"
+    );
+
+
+    const autorComentario =
+        document.createElement("strong");
+
+    autorComentario.classList.add("autor-comentario");
+    autorComentario.textContent = comentario.nombre;
+
+
+    const fechaComentario = new Date(comentario.fecha);
+
+    encabezadoComentario.appendChild(autorComentario);
+
+    if (!isNaN(fechaComentario.getTime())) {
+
+        const elementoFecha = document.createElement("time");
+
+        elementoFecha.classList.add("fecha-comentario");
+        elementoFecha.dateTime = comentario.fecha;
+        elementoFecha.textContent =
+            formatearFecha(comentario.fecha);
+
+        encabezadoComentario.appendChild(elementoFecha);
+    }
+
+
+    const textoComentario = document.createElement("p");
+
+    textoComentario.textContent = comentario.texto;
+
+
+    articuloComentario.appendChild(encabezadoComentario);
+    articuloComentario.appendChild(textoComentario);
+
+    return articuloComentario;
+}
+
+
+// Crear el formulario para comentar una publicación
+
+function crearFormularioComentario(publicacion) {
+
+    const formularioComentario =
+        document.createElement("form");
+
+    formularioComentario.classList.add(
+        "formulario-comentario"
+    );
+
+    formularioComentario.noValidate = true;
+
+
+    const grupoNombre = document.createElement("div");
+
+    grupoNombre.classList.add("campo-comentario");
+
+
+    const etiquetaNombre = document.createElement("label");
+
+    etiquetaNombre.textContent = "Nombre";
+
+
+    const campoNombreComentario =
+        document.createElement("input");
+
+    campoNombreComentario.type = "text";
+    campoNombreComentario.id =
+        `nombre-comentario-${publicacion.id}`;
+    campoNombreComentario.name = "nombreComentario";
+    campoNombreComentario.placeholder = "Escribe tu nombre";
+    campoNombreComentario.maxLength = 50;
+    campoNombreComentario.autocomplete = "off";
+    campoNombreComentario.required = true;
+
+    etiquetaNombre.htmlFor = campoNombreComentario.id;
+
+
+    const errorNombreComentario =
+        document.createElement("small");
+
+    errorNombreComentario.classList.add("mensaje-error");
+    errorNombreComentario.setAttribute("aria-live", "polite");
+
+
+    grupoNombre.appendChild(etiquetaNombre);
+    grupoNombre.appendChild(campoNombreComentario);
+    grupoNombre.appendChild(errorNombreComentario);
+
+
+    const grupoTexto = document.createElement("div");
+
+    grupoTexto.classList.add("campo-comentario");
+
+
+    const etiquetaTexto = document.createElement("label");
+
+    etiquetaTexto.textContent = "Comentario";
+
+
+    const campoTextoComentario =
+        document.createElement("textarea");
+
+    campoTextoComentario.name = "comentario";
+    campoTextoComentario.id =
+        `texto-comentario-${publicacion.id}`;
+    campoTextoComentario.placeholder = "Escribe un comentario";
+    campoTextoComentario.maxLength = 250;
+    campoTextoComentario.rows = 3;
+    campoTextoComentario.required = true;
+
+    etiquetaTexto.htmlFor = campoTextoComentario.id;
+
+
+    const errorTextoComentario =
+        document.createElement("small");
+
+    errorTextoComentario.classList.add("mensaje-error");
+    errorTextoComentario.setAttribute("aria-live", "polite");
+
+
+    grupoTexto.appendChild(etiquetaTexto);
+    grupoTexto.appendChild(campoTextoComentario);
+    grupoTexto.appendChild(errorTextoComentario);
+
+
+    const botonComentar = document.createElement("button");
+
+    botonComentar.type = "submit";
+    botonComentar.classList.add("boton-comentar");
+    botonComentar.textContent = "Comentar";
+
+
+    campoNombreComentario.addEventListener(
+        "input",
+        function () {
+            quitarError(
+                campoNombreComentario,
+                errorNombreComentario
+            );
+        }
+    );
+
+    campoTextoComentario.addEventListener(
+        "input",
+        function () {
+            quitarError(
+                campoTextoComentario,
+                errorTextoComentario
+            );
+        }
+    );
+
+    formularioComentario.addEventListener(
+        "submit",
+        function (evento) {
+            evento.preventDefault();
+
+            agregarComentario(
+                publicacion.id,
+                campoNombreComentario,
+                campoTextoComentario,
+                errorNombreComentario,
+                errorTextoComentario
+            );
+        }
+    );
+
+
+    formularioComentario.appendChild(grupoNombre);
+    formularioComentario.appendChild(grupoTexto);
+    formularioComentario.appendChild(botonComentar);
+
+    return formularioComentario;
+}
+
+
+// Validar y guardar un comentario en su publicación
+
+function agregarComentario(
+    idPublicacion,
+    campoNombreComentario,
+    campoTextoComentario,
+    errorNombreComentario,
+    errorTextoComentario
+) {
+
+    const nombre = campoNombreComentario.value.trim();
+    const texto = campoTextoComentario.value.trim();
+
+    quitarError(
+        campoNombreComentario,
+        errorNombreComentario
+    );
+
+    quitarError(
+        campoTextoComentario,
+        errorTextoComentario
+    );
+
+
+    let comentarioValido = true;
+
+    if (nombre === "") {
+
+        mostrarError(
+            campoNombreComentario,
+            errorNombreComentario,
+            "El nombre es obligatorio."
+        );
+
+        comentarioValido = false;
+    }
+
+    if (texto === "") {
+
+        mostrarError(
+            campoTextoComentario,
+            errorTextoComentario,
+            "El comentario es obligatorio."
+        );
+
+        comentarioValido = false;
+    }
+
+    if (!comentarioValido) {
+
+        if (nombre === "") {
+            campoNombreComentario.focus();
+        } else {
+            campoTextoComentario.focus();
+        }
+
+        return;
+    }
+
+
+    const publicacion = publicaciones.find(
+        function (elemento) {
+            return elemento.id === idPublicacion;
+        }
+    );
+
+    if (publicacion === undefined) {
+        return;
+    }
+
+    if (!Array.isArray(publicacion.comentarios)) {
+        publicacion.comentarios = [];
+    }
+
+
+    const nuevoComentario = {
+        id: Date.now(),
+        nombre: nombre,
+        texto: texto,
+        fecha: new Date().toISOString()
+    };
+
+    publicacion.comentarios.push(nuevoComentario);
+
+    guardarPublicaciones();
+
+    mostrarPublicaciones();
 }
 
 
