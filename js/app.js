@@ -1,6 +1,7 @@
 // Clave utilizada para guardar las publicaciones
 const CLAVE_LOCAL_STORAGE = "publicacionesRedSocial";
 const LIMITE_CARACTERES_MENSAJE = 200;
+const LIMITE_CARACTERES_COMENTARIO = 250;
 
 
 // Elementos del HTML
@@ -69,6 +70,9 @@ let publicaciones = cargarPublicaciones();
 
 // Identifica la publicación que se está editando actualmente
 let idPublicacionEnEdicion = null;
+
+// Identifica el comentario que se está editando actualmente
+let comentarioEnEdicion = null;
 
 // Texto que se está buscando actualmente
 let terminoBusqueda = "";
@@ -552,7 +556,7 @@ function normalizarPublicacion(publicacion) {
         meGustaActivo:
             publicacion.meGustaActivo === true,
 
-        comentarios: obtenerComentarios(publicacion)
+        comentarios: normalizarComentarios(publicacion)
     };
 }
 
@@ -568,6 +572,88 @@ function obtenerComentarios(publicacion) {
     // Las publicaciones antiguas no tienen comentarios
 
     return [];
+}
+
+
+// Dar a cada comentario guardado un identificador único
+
+function normalizarComentarios(publicacion) {
+
+    const comentariosNormalizados = [];
+
+    obtenerComentarios(publicacion).forEach(function (comentario) {
+
+        const idGuardado = Number(comentario.id);
+
+        const idDisponible =
+            Number.isFinite(idGuardado) &&
+            !existeComentario(comentariosNormalizados, idGuardado);
+
+        comentariosNormalizados.push({
+
+            id: idDisponible
+                ? idGuardado
+                : crearIdComentario(comentariosNormalizados),
+
+            nombre: comentario.nombre,
+            texto: comentario.texto,
+            fecha: comentario.fecha
+        });
+    });
+
+    return comentariosNormalizados;
+}
+
+
+// Revisar si un identificador ya está en uso
+
+function existeComentario(comentarios, idComentario) {
+
+    return comentarios.some(function (comentario) {
+        return comentario.id === idComentario;
+    });
+}
+
+
+// Crear un identificador que no repita el de otro comentario
+
+function crearIdComentario(comentarios) {
+
+    let nuevoId = Date.now();
+
+    while (existeComentario(comentarios, nuevoId)) {
+        nuevoId = nuevoId + 1;
+    }
+
+    return nuevoId;
+}
+
+
+// Buscar una publicación por su identificador
+
+function buscarPublicacion(idPublicacion) {
+
+    return publicaciones.find(function (publicacion) {
+        return publicacion.id === idPublicacion;
+    });
+}
+
+
+// Buscar un comentario dentro de su publicación
+
+function buscarComentario(idPublicacion, idComentario) {
+
+    const publicacion = buscarPublicacion(idPublicacion);
+
+    if (publicacion === undefined) {
+        return undefined;
+    }
+
+    return obtenerComentarios(publicacion).find(
+        function (comentario) {
+            return comentario.id === idComentario;
+        }
+    );
 }
 
 
@@ -860,7 +946,7 @@ function crearSeccionComentarios(publicacion) {
 
         comentarios.forEach(function (comentario) {
             listaComentarios.appendChild(
-                crearComentario(comentario)
+                crearComentario(comentario, publicacion)
             );
         });
     }
@@ -878,7 +964,7 @@ function crearSeccionComentarios(publicacion) {
 
 // Crear un comentario guardado
 
-function crearComentario(comentario) {
+function crearComentario(comentario, publicacion) {
 
     const articuloComentario =
         document.createElement("article");
@@ -918,15 +1004,294 @@ function crearComentario(comentario) {
     }
 
 
-    const textoComentario = document.createElement("p");
-
-    textoComentario.textContent = comentario.texto;
-
+    // El autor y la fecha original siempre se conservan a la vista
 
     articuloComentario.appendChild(encabezadoComentario);
-    articuloComentario.appendChild(textoComentario);
+
+    articuloComentario.appendChild(
+        crearContenidoComentario(comentario, publicacion)
+    );
+
+
+    // Mientras se edita, el formulario reemplaza a las acciones
+
+    if (!esComentarioEnEdicion(publicacion.id, comentario.id)) {
+
+        articuloComentario.appendChild(
+            crearAccionesComentario(comentario, publicacion)
+        );
+    }
 
     return articuloComentario;
+}
+
+
+// Revisar si un comentario es el que se está editando
+
+function esComentarioEnEdicion(idPublicacion, idComentario) {
+
+    return (
+        comentarioEnEdicion !== null &&
+        comentarioEnEdicion.idPublicacion === idPublicacion &&
+        comentarioEnEdicion.idComentario === idComentario
+    );
+}
+
+
+// Mostrar el texto del comentario o el formulario para editarlo
+
+function crearContenidoComentario(comentario, publicacion) {
+
+    if (!esComentarioEnEdicion(publicacion.id, comentario.id)) {
+
+        const textoComentario = document.createElement("p");
+
+        textoComentario.textContent = comentario.texto;
+
+        return textoComentario;
+    }
+
+
+    const formularioEdicion = document.createElement("form");
+
+    formularioEdicion.classList.add(
+        "formulario-edicion-comentario"
+    );
+
+    formularioEdicion.noValidate = true;
+
+
+    const etiquetaEdicion = document.createElement("label");
+
+    etiquetaEdicion.textContent = "Editar comentario";
+
+
+    const campoEdicion = document.createElement("textarea");
+
+    campoEdicion.id =
+        `editar-comentario-${publicacion.id}-${comentario.id}`;
+    campoEdicion.value = comentario.texto;
+    campoEdicion.maxLength = LIMITE_CARACTERES_COMENTARIO;
+    campoEdicion.rows = 3;
+
+    etiquetaEdicion.htmlFor = campoEdicion.id;
+
+
+    const errorEdicion = document.createElement("small");
+
+    errorEdicion.classList.add("mensaje-error");
+    errorEdicion.setAttribute("aria-live", "polite");
+
+
+    const botonesEdicion = document.createElement("div");
+
+    botonesEdicion.classList.add("botones-edicion");
+
+
+    const botonGuardar = document.createElement("button");
+
+    botonGuardar.type = "submit";
+    botonGuardar.classList.add("boton-guardar");
+    botonGuardar.textContent = "Guardar";
+
+
+    const botonCancelar = document.createElement("button");
+
+    botonCancelar.type = "button";
+    botonCancelar.classList.add("boton-cancelar");
+    botonCancelar.textContent = "Cancelar";
+
+    botonCancelar.addEventListener("click", function () {
+        cancelarEdicionComentario();
+    });
+
+
+    campoEdicion.addEventListener("input", function () {
+        quitarError(campoEdicion, errorEdicion);
+    });
+
+    formularioEdicion.addEventListener(
+        "submit",
+        function (evento) {
+            evento.preventDefault();
+
+            guardarEdicionComentario(
+                publicacion.id,
+                comentario.id,
+                campoEdicion,
+                errorEdicion
+            );
+        }
+    );
+
+
+    botonesEdicion.appendChild(botonGuardar);
+    botonesEdicion.appendChild(botonCancelar);
+
+    formularioEdicion.appendChild(etiquetaEdicion);
+    formularioEdicion.appendChild(campoEdicion);
+    formularioEdicion.appendChild(errorEdicion);
+    formularioEdicion.appendChild(botonesEdicion);
+
+    setTimeout(function () {
+        campoEdicion.focus();
+        campoEdicion.setSelectionRange(
+            campoEdicion.value.length,
+            campoEdicion.value.length
+        );
+    }, 0);
+
+    return formularioEdicion;
+}
+
+
+// Botones para editar y eliminar un comentario
+
+function crearAccionesComentario(comentario, publicacion) {
+
+    const acciones = document.createElement("div");
+
+    acciones.classList.add("acciones-comentario");
+
+
+    const botonEditar = document.createElement("button");
+
+    botonEditar.type = "button";
+    botonEditar.classList.add("boton-editar-comentario");
+    botonEditar.textContent = "Editar";
+
+    botonEditar.addEventListener("click", function () {
+        iniciarEdicionComentario(
+            publicacion.id,
+            comentario.id
+        );
+    });
+
+
+    const botonEliminar = document.createElement("button");
+
+    botonEliminar.type = "button";
+    botonEliminar.classList.add("boton-eliminar-comentario");
+    botonEliminar.textContent = "Eliminar";
+
+    botonEliminar.addEventListener("click", function () {
+        eliminarComentario(
+            publicacion.id,
+            comentario.id
+        );
+    });
+
+
+    acciones.appendChild(botonEditar);
+    acciones.appendChild(botonEliminar);
+
+    return acciones;
+}
+
+
+// Cargar en el formulario solo el comentario seleccionado
+
+function iniciarEdicionComentario(idPublicacion, idComentario) {
+
+    comentarioEnEdicion = {
+        idPublicacion: idPublicacion,
+        idComentario: idComentario
+    };
+
+    mostrarPublicaciones();
+}
+
+
+// Salir de la edición sin guardar cambios
+
+function cancelarEdicionComentario() {
+
+    comentarioEnEdicion = null;
+
+    mostrarPublicaciones();
+}
+
+
+// Guardar únicamente el texto del comentario seleccionado
+
+function guardarEdicionComentario(
+    idPublicacion,
+    idComentario,
+    campoEdicion,
+    errorEdicion
+) {
+
+    const textoEditado = campoEdicion.value.trim();
+
+    if (textoEditado === "") {
+
+        mostrarError(
+            campoEdicion,
+            errorEdicion,
+            "El comentario no puede estar vacío."
+        );
+
+        campoEdicion.focus();
+
+        return;
+    }
+
+
+    const comentario = buscarComentario(
+        idPublicacion,
+        idComentario
+    );
+
+    if (comentario === undefined) {
+        return;
+    }
+
+
+    // El autor y la fecha original no se modifican
+
+    comentario.texto = textoEditado;
+
+    guardarPublicaciones();
+
+    comentarioEnEdicion = null;
+
+    mostrarPublicaciones();
+}
+
+
+// Eliminar un comentario después de confirmar
+
+function eliminarComentario(idPublicacion, idComentario) {
+
+    const confirmarEliminacion = window.confirm(
+        "¿Deseas eliminar este comentario?"
+    );
+
+    if (!confirmarEliminacion) {
+        return;
+    }
+
+
+    const publicacion = buscarPublicacion(idPublicacion);
+
+    if (publicacion === undefined) {
+        return;
+    }
+
+
+    publicacion.comentarios = obtenerComentarios(publicacion)
+        .filter(function (comentario) {
+            return comentario.id !== idComentario;
+        });
+
+
+    if (esComentarioEnEdicion(idPublicacion, idComentario)) {
+        comentarioEnEdicion = null;
+    }
+
+    guardarPublicaciones();
+
+    mostrarPublicaciones();
 }
 
 
@@ -1128,11 +1493,7 @@ function agregarComentario(
     }
 
 
-    const publicacion = publicaciones.find(
-        function (elemento) {
-            return elemento.id === idPublicacion;
-        }
-    );
+    const publicacion = buscarPublicacion(idPublicacion);
 
     if (publicacion === undefined) {
         return;
@@ -1144,7 +1505,7 @@ function agregarComentario(
 
 
     const nuevoComentario = {
-        id: Date.now(),
+        id: crearIdComentario(publicacion.comentarios),
         nombre: nombre,
         texto: texto,
         fecha: new Date().toISOString()
@@ -1333,11 +1694,7 @@ function guardarEdicion(idPublicacion, campoEdicion, errorEdicion) {
     }
 
 
-    const publicacion = publicaciones.find(
-        function (elemento) {
-            return elemento.id === idPublicacion;
-        }
-    );
+    const publicacion = buscarPublicacion(idPublicacion);
 
     if (publicacion === undefined) {
         return;
@@ -1382,6 +1739,16 @@ function eliminarPublicacion(idPublicacion) {
         }
     );
 
+
+    // Ya no existe el comentario que se estaba editando
+
+    if (
+        comentarioEnEdicion !== null &&
+        comentarioEnEdicion.idPublicacion === idPublicacion
+    ) {
+        comentarioEnEdicion = null;
+    }
+
     guardarPublicaciones();
 
     mostrarPublicaciones();
@@ -1392,11 +1759,7 @@ function eliminarPublicacion(idPublicacion) {
 
 function alternarMeGusta(idPublicacion) {
 
-    const publicacion = publicaciones.find(
-        function (elemento) {
-            return elemento.id === idPublicacion;
-        }
-    );
+    const publicacion = buscarPublicacion(idPublicacion);
 
     if (publicacion === undefined) {
         return;

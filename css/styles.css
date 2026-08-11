@@ -590,6 +590,72 @@ textarea:focus {
     font-size: 14px;
 }
 
+/* Acciones de cada comentario */
+
+.acciones-comentario {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+
+    margin-top: 10px;
+}
+
+.boton-editar-comentario,
+.boton-eliminar-comentario {
+    padding: 6px 12px;
+
+    border-radius: 7px;
+
+    font-size: 13px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s,
+        transform 0.2s;
+}
+
+.boton-editar-comentario {
+    background-color: #e8efff;
+    color: #3159c7;
+
+    border: 1px solid #c9d7ff;
+}
+
+.boton-editar-comentario:hover {
+    background-color: #d6e2ff;
+}
+
+.boton-eliminar-comentario {
+    background-color: #fff1f2;
+    color: #be123c;
+
+    border: 1px solid #fecdd3;
+}
+
+.boton-eliminar-comentario:hover {
+    background-color: #ffe4e6;
+}
+
+.boton-editar-comentario:active,
+.boton-eliminar-comentario:active {
+    transform: scale(0.96);
+}
+
+.formulario-edicion-comentario {
+    margin-top: 10px;
+}
+
+.formulario-edicion-comentario label {
+    font-size: 14px;
+}
+
+.formulario-edicion-comentario textarea {
+    padding: 10px 12px;
+    font-size: 14px;
+}
+
 .formulario-comentario {
     margin-top: 14px;
     padding: 14px;
@@ -672,6 +738,15 @@ textarea:focus {
 
     .boton-guardar,
     .boton-cancelar {
+        width: 100%;
+    }
+
+    .acciones-comentario {
+        flex-direction: column;
+    }
+
+    .boton-editar-comentario,
+    .boton-eliminar-comentario {
         width: 100%;
     }
 

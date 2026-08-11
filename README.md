@@ -2,7 +2,7 @@
 
 Proyecto académico desarrollado con HTML, CSS y JavaScript.
 
-Actualmente el proyecto implementa la **Historia 1: Publicar un mensaje**, la reacción con “Me gusta” de la **Historia 3**, la conservación de publicaciones de la **Historia 4**, la edición de mensajes de la **Historia 6**, los comentarios de la **Historia 7**, la búsqueda de publicaciones de la **Historia 8** y el ordenamiento de la **Historia 9**.
+Actualmente el proyecto implementa la **Historia 1: Publicar un mensaje**, la reacción con “Me gusta” de la **Historia 3**, la conservación de publicaciones de la **Historia 4**, la edición de mensajes de la **Historia 6**, los comentarios de la **Historia 7**, la búsqueda de publicaciones de la **Historia 8**, el ordenamiento de la **Historia 9** y la edición y eliminación de comentarios de la **Historia 12**.
 
 ## Historias de usuario implementadas
 
@@ -34,6 +34,10 @@ Como estudiante, quiero buscar por autor o contenido para encontrar rápidamente
 
 Como estudiante, quiero ordenar las publicaciones para ver primero las más recientes o las más populares.
 
+### Historia 12: Editar o eliminar comentarios
+
+Como estudiante, quiero editar o eliminar mis comentarios para corregir errores o retirar contenido que ya no deseo mostrar.
+
 ## Funcionalidades implementadas
 
 - Campo para escribir el nombre del estudiante.
@@ -61,6 +65,10 @@ Como estudiante, quiero ordenar las publicaciones para ver primero las más reci
 - Aviso al usuario cuando la búsqueda no encuentra coincidencias.
 - Selector para ordenar por publicaciones recientes, antiguas o con más “Me gusta”.
 - Ordenamiento compatible con los resultados de búsqueda sin modificar los datos guardados.
+- Botones de “Editar” y “Eliminar” en cada comentario.
+- Edición del texto de un comentario conservando su autor y su fecha original.
+- Validación para impedir que un comentario editado quede vacío o con solo espacios.
+- Confirmación antes de eliminar un comentario.
 - Diseño adaptable para computadoras y teléfonos.
 
 ## Tecnologías utilizadas
@@ -121,6 +129,18 @@ Para ejecutar las pruebas mínimas de la Historia 9:
 node tests/h9.test.js
 ```
 
+Para ejecutar las pruebas mínimas de la Historia 11:
+
+```bash
+node tests/h11.test.js
+```
+
+Para ejecutar las pruebas mínimas de la Historia 12:
+
+```bash
+node tests/h12.test.js
+```
+
 ## Repositorio
 
 ```bash
@@ -129,7 +149,7 @@ git clone https://github.com/Doosu03/RedSocial.git
 
 ## Estado del proyecto
 
-Historias 1, 3, 4, 6, 7, 8 y 9 completadas.
+Historias 1, 3, 4, 6, 7, 8, 9, 10, 11 y 12 completadas.
 
 ## Autores
 1. Kevin Núñez.
