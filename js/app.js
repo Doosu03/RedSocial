@@ -31,6 +31,20 @@ const mensajeVacio = document.getElementById(
     "mensaje-vacio"
 );
 
+const formularioBusqueda = document.getElementById(
+    "formulario-busqueda"
+);
+
+const campoBusqueda = document.getElementById("buscador");
+
+const botonLimpiarBusqueda = document.getElementById(
+    "limpiar-busqueda"
+);
+
+const resumenBusqueda = document.getElementById(
+    "resumen-busqueda"
+);
+
 
 // Cargar las publicaciones guardadas
 
@@ -38,6 +52,9 @@ let publicaciones = cargarPublicaciones();
 
 // Identifica la publicación que se está editando actualmente
 let idPublicacionEnEdicion = null;
+
+// Texto que se está buscando actualmente
+let terminoBusqueda = "";
 
 mostrarPublicaciones();
 
@@ -112,6 +129,11 @@ formulario.addEventListener("submit", function (evento) {
     guardarPublicaciones();
 
 
+    // Quitar la búsqueda para que la nueva publicación se vea
+
+    reiniciarBusqueda();
+
+
     // Mostrar nuevamente todas las publicaciones
 
     mostrarPublicaciones();
@@ -153,6 +175,146 @@ campoNombre.addEventListener("input", function () {
         errorNombre
     );
 });
+
+
+// Filtrar la lista mientras se escribe
+
+campoBusqueda.addEventListener("input", function () {
+
+    terminoBusqueda = campoBusqueda.value;
+
+    mostrarPublicaciones();
+});
+
+
+// Filtrar la lista al presionar "Buscar"
+
+formularioBusqueda.addEventListener("submit", function (evento) {
+
+    evento.preventDefault();
+
+    terminoBusqueda = campoBusqueda.value;
+
+    mostrarPublicaciones();
+});
+
+
+// Volver a mostrar todas las publicaciones
+
+botonLimpiarBusqueda.addEventListener("click", function () {
+
+    reiniciarBusqueda();
+
+    mostrarPublicaciones();
+
+    campoBusqueda.focus();
+});
+
+
+// Dejar el campo de búsqueda vacío
+
+function reiniciarBusqueda() {
+
+    campoBusqueda.value = "";
+
+    terminoBusqueda = "";
+}
+
+
+// Obtener el texto buscado sin espacios ni mayúsculas
+
+function obtenerTextoBuscado() {
+
+    return terminoBusqueda.trim().toLowerCase();
+}
+
+
+// Revisar si una publicación coincide con el texto buscado
+
+function coincideConBusqueda(publicacion, textoBuscado) {
+
+    const nombre = String(publicacion.nombre).toLowerCase();
+    const mensaje = String(publicacion.mensaje).toLowerCase();
+
+    return (
+        nombre.includes(textoBuscado) ||
+        mensaje.includes(textoBuscado)
+    );
+}
+
+
+// Publicaciones que se deben mostrar según la búsqueda
+
+function filtrarPublicaciones() {
+
+    const textoBuscado = obtenerTextoBuscado();
+
+    // Sin búsqueda se muestran todas las publicaciones
+
+    if (textoBuscado === "") {
+        return publicaciones;
+    }
+
+    return publicaciones.filter(function (publicacion) {
+        return coincideConBusqueda(publicacion, textoBuscado);
+    });
+}
+
+
+// Informar el resultado de la búsqueda
+
+function actualizarMensajesDeLista(cantidadVisible) {
+
+    const textoBuscado = terminoBusqueda.trim();
+
+
+    // Todavía no se ha publicado nada
+
+    if (publicaciones.length === 0) {
+
+        mensajeVacio.textContent =
+            "Todavía no hay publicaciones.";
+
+        mensajeVacio.style.display = "block";
+
+        resumenBusqueda.textContent = "";
+
+        return;
+    }
+
+
+    // Hay publicaciones, pero ninguna coincide
+
+    if (cantidadVisible === 0) {
+
+        mensajeVacio.textContent =
+            `No se encontraron publicaciones con "${textoBuscado}".`;
+
+        mensajeVacio.style.display = "block";
+
+        resumenBusqueda.textContent = "";
+
+        return;
+    }
+
+
+    mensajeVacio.style.display = "none";
+
+
+    if (textoBuscado === "") {
+
+        resumenBusqueda.textContent = "";
+
+        return;
+    }
+
+
+    resumenBusqueda.textContent =
+        cantidadVisible === 1
+            ? `1 publicación encontrada con "${textoBuscado}".`
+            : `${cantidadVisible} publicaciones encontradas ` +
+              `con "${textoBuscado}".`;
+}
 
 
 // Guardar publicaciones en LocalStorage
@@ -303,17 +465,16 @@ function mostrarPublicaciones() {
 
     listaPublicaciones.innerHTML = "";
 
-    if (publicaciones.length === 0) {
+    const publicacionesVisibles = filtrarPublicaciones();
 
-        mensajeVacio.style.display = "block";
+    actualizarMensajesDeLista(publicacionesVisibles.length);
 
+    if (publicacionesVisibles.length === 0) {
         return;
     }
 
-    mensajeVacio.style.display = "none";
 
-
-    publicaciones.forEach(function (publicacion) {
+    publicacionesVisibles.forEach(function (publicacion) {
 
         const articulo =
             document.createElement("article");

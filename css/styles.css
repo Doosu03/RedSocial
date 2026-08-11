@@ -179,6 +179,76 @@ textarea:focus {
     font-size: 24px;
 }
 
+/* Búsqueda de publicaciones */
+
+.formulario-busqueda {
+    margin-bottom: 18px;
+}
+
+.campo-busqueda {
+    display: flex;
+    gap: 10px;
+}
+
+.campo-busqueda input {
+    flex: 1;
+    min-width: 0;
+}
+
+.boton-buscar,
+.boton-limpiar {
+    padding: 11px 18px;
+
+    border-radius: 10px;
+
+    font-size: 15px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    transition:
+        background-color 0.2s,
+        transform 0.2s;
+}
+
+.boton-buscar {
+    background-color: #3159c7;
+    color: #ffffff;
+
+    border: none;
+}
+
+.boton-buscar:hover {
+    background-color: #2447a8;
+}
+
+.boton-limpiar {
+    background-color: #ffffff;
+    color: #4b5563;
+
+    border: 1px solid #cbd5e1;
+}
+
+.boton-limpiar:hover {
+    background-color: #f1f5f9;
+}
+
+.boton-buscar:active,
+.boton-limpiar:active {
+    transform: scale(0.98);
+}
+
+.resumen-busqueda {
+    display: block;
+    min-height: 18px;
+    margin-top: 8px;
+
+    color: #6b7280;
+    font-size: 13px;
+}
+
 .mensaje-vacio {
     padding: 22px;
 
@@ -531,5 +601,14 @@ textarea:focus {
         align-items: flex-start;
         flex-direction: column;
         gap: 3px;
+    }
+
+    .campo-busqueda {
+        flex-direction: column;
+    }
+
+    .boton-buscar,
+    .boton-limpiar {
+        width: 100%;
     }
 }

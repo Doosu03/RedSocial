@@ -2,7 +2,7 @@
 
 Proyecto académico desarrollado con HTML, CSS y JavaScript.
 
-Actualmente el proyecto implementa la **Historia 1: Publicar un mensaje**, la reacción con “Me gusta” de la **Historia 3**, la conservación de publicaciones de la **Historia 4**, la edición de mensajes de la **Historia 6** y los comentarios de la **Historia 7**.
+Actualmente el proyecto implementa la **Historia 1: Publicar un mensaje**, la reacción con “Me gusta” de la **Historia 3**, la conservación de publicaciones de la **Historia 4**, la edición de mensajes de la **Historia 6**, los comentarios de la **Historia 7** y la búsqueda de publicaciones de la **Historia 8**.
 
 ## Historias de usuario implementadas
 
@@ -26,6 +26,10 @@ Como estudiante, quiero corregir mi mensaje para solucionar errores sin eliminar
 
 Como estudiante, quiero comentar una publicación para participar en la conversación.
 
+### Historia 8: Buscar publicaciones
+
+Como estudiante, quiero buscar por autor o contenido para encontrar rápidamente una publicación.
+
 ## Funcionalidades implementadas
 
 - Campo para escribir el nombre del estudiante.
@@ -46,6 +50,11 @@ Como estudiante, quiero comentar una publicación para participar en la conversa
 - Validación de los campos obligatorios al comentar.
 - Visualización del autor, texto, fecha y hora de cada comentario.
 - Conservación de los comentarios en su publicación correspondiente al recargar la página.
+- Campo de búsqueda por nombre del autor o contenido del mensaje.
+- Filtrado de la lista mientras se escribe y al presionar el botón “Buscar”.
+- Búsqueda sin distinguir mayúsculas de minúsculas.
+- Botón “Limpiar” y campo vacío para volver a ver todas las publicaciones.
+- Aviso al usuario cuando la búsqueda no encuentra coincidencias.
 - Diseño adaptable para computadoras y teléfonos.
 
 ## Tecnologías utilizadas
@@ -94,6 +103,12 @@ Para ejecutar las pruebas mínimas de la Historia 7:
 node tests/h7.test.js
 ```
 
+Para ejecutar las pruebas mínimas de la Historia 8:
+
+```bash
+node tests/h8.test.js
+```
+
 ## Repositorio
 
 ```bash
@@ -102,7 +117,7 @@ git clone https://github.com/Doosu03/RedSocial.git
 
 ## Estado del proyecto
 
-Historias 1, 3, 4, 6 y 7 completadas.
+Historias 1, 3, 4, 6, 7 y 8 completadas.
 
 La función de ver las publicaciones ordenadas se agregará en una historia posterior.
 

@@ -97,9 +97,57 @@
 
             <h2>Publicaciones</h2>
 
+            <form
+                id="formulario-busqueda"
+                class="formulario-busqueda"
+                role="search"
+                novalidate
+            >
+
+                <label for="buscador">
+                    Buscar publicaciones
+                </label>
+
+                <div class="campo-busqueda">
+
+                    <input
+                        type="search"
+                        id="buscador"
+                        name="buscador"
+                        placeholder="Buscar por autor o contenido"
+                        maxlength="50"
+                        autocomplete="off"
+                    >
+
+                    <button
+                        type="submit"
+                        class="boton-buscar"
+                    >
+                        Buscar
+                    </button>
+
+                    <button
+                        type="button"
+                        id="limpiar-busqueda"
+                        class="boton-limpiar"
+                    >
+                        Limpiar
+                    </button>
+
+                </div>
+
+                <small
+                    id="resumen-busqueda"
+                    class="resumen-busqueda"
+                    aria-live="polite"
+                ></small>
+
+            </form>
+
             <p
                 id="mensaje-vacio"
                 class="mensaje-vacio"
+                aria-live="polite"
             >
                 Todavía no hay publicaciones.
             </p>
