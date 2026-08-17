@@ -2,7 +2,7 @@
 
 Proyecto académico desarrollado con HTML, CSS y JavaScript.
 
-Actualmente el proyecto implementa las historias 1, 3, 4 y 6 a 13, incluida la edición de publicaciones y comentarios, búsqueda, ordenamiento y reacciones múltiples.
+Actualmente el proyecto implementa las historias 1, 3, 4 y 6 a 14, incluida la edición de publicaciones y comentarios, búsqueda, ordenamiento, reacciones múltiples y respuestas a comentarios.
 
 ## Historias de usuario implementadas
 
@@ -42,6 +42,10 @@ Como estudiante, quiero editar o eliminar mis comentarios para corregir errores 
 
 Como estudiante, quiero reaccionar de distintas maneras a una publicación para expresar mejor mi opinión.
 
+### Historia 14: Responder comentarios
+
+Como estudiante, quiero responder un comentario para continuar una conversación específica.
+
 ## Funcionalidades implementadas
 
 - Campo para escribir el nombre del estudiante.
@@ -75,6 +79,11 @@ Como estudiante, quiero reaccionar de distintas maneras a una publicación para 
 - Edición del texto de un comentario conservando su autor y su fecha original.
 - Validación para impedir que un comentario editado quede vacío o con solo espacios.
 - Confirmación antes de eliminar un comentario.
+- Acción “Responder” disponible en cada comentario.
+- Formulario de nombre y texto para responder un comentario específico.
+- Visualización del autor, texto, fecha y hora de cada respuesta.
+- Varias respuestas persistentes por comentario sin mezclarse entre publicaciones.
+- Compatibilidad con comentarios antiguos que no contienen respuestas.
 - Diseño adaptable para computadoras y teléfonos.
 
 ## Tecnologías utilizadas
@@ -153,6 +162,12 @@ Para ejecutar las pruebas mínimas de la Historia 13:
 node tests/h13.test.js
 ```
 
+Para ejecutar las pruebas mínimas de la Historia 14:
+
+```bash
+node tests/h14.test.js
+```
+
 ## Repositorio
 
 ```bash
@@ -161,7 +176,7 @@ git clone https://github.com/Doosu03/RedSocial.git
 
 ## Estado del proyecto
 
-Historias 1, 3, 4, 6, 7, 8, 9, 10, 11, 12 y 13 completadas.
+Historias 1, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13 y 14 completadas.
 
 ## Autores
 1. Kevin Núñez.

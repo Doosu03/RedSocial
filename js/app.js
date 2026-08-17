@@ -82,6 +82,9 @@ let idPublicacionEnEdicion = null;
 // Identifica el comentario que se está editando actualmente
 let comentarioEnEdicion = null;
 
+// Identifica el comentario al que se está respondiendo
+let respuestaEnCreacion = null;
+
 // Texto que se está buscando actualmente
 let terminoBusqueda = "";
 
@@ -654,11 +657,110 @@ function normalizarComentarios(publicacion) {
 
             nombre: comentario.nombre,
             texto: comentario.texto,
-            fecha: comentario.fecha
+            fecha: comentario.fecha,
+            respuestas: normalizarRespuestas(comentario)
         });
     });
 
     return comentariosNormalizados;
+}
+
+
+// Recuperar las respuestas de un comentario
+
+function obtenerRespuestas(comentario) {
+
+    if (Array.isArray(comentario.respuestas)) {
+        return comentario.respuestas;
+    }
+
+    // Los comentarios antiguos no tienen respuestas
+
+    return [];
+}
+
+
+// Completar los identificadores de las respuestas guardadas
+
+function normalizarRespuestas(comentario) {
+
+    const respuestasNormalizadas = [];
+
+    obtenerRespuestas(comentario).forEach(function (respuesta) {
+
+        const idGuardado = Number(respuesta.id);
+
+        const idDisponible =
+            Number.isFinite(idGuardado) &&
+            !existeRespuesta(respuestasNormalizadas, idGuardado);
+
+        respuestasNormalizadas.push({
+
+            id: idDisponible
+                ? idGuardado
+                : crearIdRespuestaEnLista(respuestasNormalizadas),
+
+            nombre: respuesta.nombre,
+            texto: respuesta.texto,
+            fecha: respuesta.fecha
+        });
+    });
+
+    return respuestasNormalizadas;
+}
+
+
+// Revisar si un identificador de respuesta ya está en uso
+
+function existeRespuesta(respuestas, idRespuesta) {
+
+    return respuestas.some(function (respuesta) {
+        return respuesta.id === idRespuesta;
+    });
+}
+
+
+// Crear un identificador único dentro de una lista de respuestas
+
+function crearIdRespuestaEnLista(respuestas) {
+
+    let nuevoId = Date.now();
+
+    while (existeRespuesta(respuestas, nuevoId)) {
+        nuevoId = nuevoId + 1;
+    }
+
+    return nuevoId;
+}
+
+
+// Revisar todas las publicaciones antes de crear una respuesta nueva
+
+function existeRespuestaGuardada(idRespuesta) {
+
+    return publicaciones.some(function (publicacion) {
+
+        return obtenerComentarios(publicacion).some(function (comentario) {
+
+            return obtenerRespuestas(comentario).some(function (respuesta) {
+                return respuesta.id === idRespuesta;
+            });
+        });
+    });
+}
+
+
+// Crear un identificador que no se repita en otra respuesta
+
+function crearIdRespuesta() {
+
+    let nuevoId = Date.now();
+
+    while (existeRespuestaGuardada(nuevoId)) {
+        nuevoId = nuevoId + 1;
+    }
+
+    return nuevoId;
 }
 
 
@@ -1082,6 +1184,10 @@ function crearComentario(comentario, publicacion) {
         );
     }
 
+    articuloComentario.appendChild(
+        crearSeccionRespuestas(comentario, publicacion)
+    );
+
     return articuloComentario;
 }
 
@@ -1242,16 +1348,380 @@ function crearAccionesComentario(comentario, publicacion) {
     });
 
 
+    const botonResponder = document.createElement("button");
+
+    botonResponder.type = "button";
+    botonResponder.classList.add("boton-responder-comentario");
+    botonResponder.textContent = "Responder";
+
+    botonResponder.addEventListener("click", function () {
+        iniciarRespuesta(
+            publicacion.id,
+            comentario.id
+        );
+    });
+
+
     acciones.appendChild(botonEditar);
     acciones.appendChild(botonEliminar);
+    acciones.appendChild(botonResponder);
 
     return acciones;
+}
+
+
+// Crear la sección de respuestas de un comentario
+
+function crearSeccionRespuestas(comentario, publicacion) {
+
+    const seccionRespuestas = document.createElement("section");
+
+    seccionRespuestas.classList.add("seccion-respuestas");
+
+
+    const tituloRespuestas = document.createElement("h5");
+
+    tituloRespuestas.textContent = "Respuestas";
+
+
+    const listaRespuestas = document.createElement("div");
+
+    listaRespuestas.classList.add("lista-respuestas");
+
+
+    obtenerRespuestas(comentario).forEach(function (respuesta) {
+        listaRespuestas.appendChild(crearRespuesta(respuesta));
+    });
+
+
+    seccionRespuestas.appendChild(tituloRespuestas);
+    seccionRespuestas.appendChild(listaRespuestas);
+
+
+    if (esRespuestaEnCreacion(publicacion.id, comentario.id)) {
+        seccionRespuestas.appendChild(
+            crearFormularioRespuesta(comentario, publicacion)
+        );
+    }
+
+    return seccionRespuestas;
+}
+
+
+// Crear una respuesta guardada
+
+function crearRespuesta(respuesta) {
+
+    const articuloRespuesta = document.createElement("article");
+
+    articuloRespuesta.classList.add("respuesta");
+
+
+    const encabezadoRespuesta = document.createElement("div");
+
+    encabezadoRespuesta.classList.add("encabezado-respuesta");
+
+
+    const autorRespuesta = document.createElement("strong");
+
+    autorRespuesta.classList.add("autor-respuesta");
+    autorRespuesta.textContent = respuesta.nombre;
+
+    encabezadoRespuesta.appendChild(autorRespuesta);
+
+
+    const fechaRespuesta = new Date(respuesta.fecha);
+
+    if (!isNaN(fechaRespuesta.getTime())) {
+
+        const elementoFecha = document.createElement("time");
+
+        elementoFecha.classList.add("fecha-respuesta");
+        elementoFecha.dateTime = respuesta.fecha;
+        elementoFecha.textContent = formatearFecha(respuesta.fecha);
+
+        encabezadoRespuesta.appendChild(elementoFecha);
+    }
+
+
+    const textoRespuesta = document.createElement("p");
+
+    textoRespuesta.textContent = respuesta.texto;
+
+
+    articuloRespuesta.appendChild(encabezadoRespuesta);
+    articuloRespuesta.appendChild(textoRespuesta);
+
+    return articuloRespuesta;
+}
+
+
+// Revisar si el comentario tiene abierto el formulario de respuesta
+
+function esRespuestaEnCreacion(idPublicacion, idComentario) {
+
+    return (
+        respuestaEnCreacion !== null &&
+        respuestaEnCreacion.idPublicacion === idPublicacion &&
+        respuestaEnCreacion.idComentario === idComentario
+    );
+}
+
+
+// Crear el formulario para responder un comentario
+
+function crearFormularioRespuesta(comentario, publicacion) {
+
+    const formularioRespuesta = document.createElement("form");
+
+    formularioRespuesta.classList.add("formulario-respuesta");
+    formularioRespuesta.noValidate = true;
+
+
+    const grupoNombre = document.createElement("div");
+
+    grupoNombre.classList.add("campo-respuesta");
+
+
+    const etiquetaNombre = document.createElement("label");
+
+    etiquetaNombre.textContent = "Nombre";
+
+
+    const campoNombreRespuesta = document.createElement("input");
+
+    campoNombreRespuesta.type = "text";
+    campoNombreRespuesta.id =
+        `nombre-respuesta-${publicacion.id}-${comentario.id}`;
+    campoNombreRespuesta.placeholder = "Escribe tu nombre";
+    campoNombreRespuesta.maxLength = 50;
+    campoNombreRespuesta.autocomplete = "off";
+    campoNombreRespuesta.required = true;
+
+    etiquetaNombre.htmlFor = campoNombreRespuesta.id;
+
+
+    const errorNombreRespuesta = document.createElement("small");
+
+    errorNombreRespuesta.classList.add("mensaje-error");
+    errorNombreRespuesta.setAttribute("aria-live", "polite");
+
+
+    grupoNombre.appendChild(etiquetaNombre);
+    grupoNombre.appendChild(campoNombreRespuesta);
+    grupoNombre.appendChild(errorNombreRespuesta);
+
+
+    const grupoTexto = document.createElement("div");
+
+    grupoTexto.classList.add("campo-respuesta");
+
+
+    const etiquetaTexto = document.createElement("label");
+
+    etiquetaTexto.textContent = "Respuesta";
+
+
+    const campoTextoRespuesta = document.createElement("textarea");
+
+    campoTextoRespuesta.id =
+        `texto-respuesta-${publicacion.id}-${comentario.id}`;
+    campoTextoRespuesta.placeholder = "Escribe una respuesta";
+    campoTextoRespuesta.maxLength = LIMITE_CARACTERES_COMENTARIO;
+    campoTextoRespuesta.rows = 3;
+    campoTextoRespuesta.required = true;
+
+    etiquetaTexto.htmlFor = campoTextoRespuesta.id;
+
+
+    const errorTextoRespuesta = document.createElement("small");
+
+    errorTextoRespuesta.classList.add("mensaje-error");
+    errorTextoRespuesta.setAttribute("aria-live", "polite");
+
+
+    grupoTexto.appendChild(etiquetaTexto);
+    grupoTexto.appendChild(campoTextoRespuesta);
+    grupoTexto.appendChild(errorTextoRespuesta);
+
+
+    const botonesRespuesta = document.createElement("div");
+
+    botonesRespuesta.classList.add("botones-respuesta");
+
+
+    const botonGuardarRespuesta = document.createElement("button");
+
+    botonGuardarRespuesta.type = "submit";
+    botonGuardarRespuesta.classList.add("boton-guardar-respuesta");
+    botonGuardarRespuesta.textContent = "Responder";
+
+
+    const botonCancelarRespuesta = document.createElement("button");
+
+    botonCancelarRespuesta.type = "button";
+    botonCancelarRespuesta.classList.add("boton-cancelar-respuesta");
+    botonCancelarRespuesta.textContent = "Cancelar";
+
+    botonCancelarRespuesta.addEventListener("click", function () {
+        cancelarRespuesta();
+    });
+
+
+    campoNombreRespuesta.addEventListener("input", function () {
+        quitarError(campoNombreRespuesta, errorNombreRespuesta);
+    });
+
+    campoTextoRespuesta.addEventListener("input", function () {
+        quitarError(campoTextoRespuesta, errorTextoRespuesta);
+    });
+
+
+    formularioRespuesta.addEventListener("submit", function (evento) {
+
+        evento.preventDefault();
+
+        agregarRespuesta(
+            publicacion.id,
+            comentario.id,
+            campoNombreRespuesta,
+            campoTextoRespuesta,
+            errorNombreRespuesta,
+            errorTextoRespuesta
+        );
+    });
+
+
+    botonesRespuesta.appendChild(botonGuardarRespuesta);
+    botonesRespuesta.appendChild(botonCancelarRespuesta);
+
+    formularioRespuesta.appendChild(grupoNombre);
+    formularioRespuesta.appendChild(grupoTexto);
+    formularioRespuesta.appendChild(botonesRespuesta);
+
+
+    setTimeout(function () {
+        campoNombreRespuesta.focus();
+    }, 0);
+
+    return formularioRespuesta;
+}
+
+
+// Abrir el formulario del comentario seleccionado
+
+function iniciarRespuesta(idPublicacion, idComentario) {
+
+    if (buscarComentario(idPublicacion, idComentario) === undefined) {
+        return;
+    }
+
+    comentarioEnEdicion = null;
+
+    respuestaEnCreacion = {
+        idPublicacion: idPublicacion,
+        idComentario: idComentario
+    };
+
+    mostrarPublicaciones();
+}
+
+
+// Cerrar el formulario sin guardar una respuesta
+
+function cancelarRespuesta() {
+
+    respuestaEnCreacion = null;
+
+    mostrarPublicaciones();
+}
+
+
+// Validar y guardar una respuesta en el comentario seleccionado
+
+function agregarRespuesta(
+    idPublicacion,
+    idComentario,
+    campoNombreRespuesta,
+    campoTextoRespuesta,
+    errorNombreRespuesta,
+    errorTextoRespuesta
+) {
+
+    const nombre = campoNombreRespuesta.value.trim();
+    const texto = campoTextoRespuesta.value.trim();
+
+    quitarError(campoNombreRespuesta, errorNombreRespuesta);
+    quitarError(campoTextoRespuesta, errorTextoRespuesta);
+
+
+    let respuestaValida = true;
+
+    if (nombre === "") {
+
+        mostrarError(
+            campoNombreRespuesta,
+            errorNombreRespuesta,
+            "El nombre es obligatorio."
+        );
+
+        respuestaValida = false;
+    }
+
+    if (texto === "") {
+
+        mostrarError(
+            campoTextoRespuesta,
+            errorTextoRespuesta,
+            "La respuesta es obligatoria."
+        );
+
+        respuestaValida = false;
+    }
+
+    if (!respuestaValida) {
+
+        if (nombre === "") {
+            campoNombreRespuesta.focus();
+        } else {
+            campoTextoRespuesta.focus();
+        }
+
+        return;
+    }
+
+
+    const comentario = buscarComentario(idPublicacion, idComentario);
+
+    if (comentario === undefined) {
+        return;
+    }
+
+    if (!Array.isArray(comentario.respuestas)) {
+        comentario.respuestas = [];
+    }
+
+
+    comentario.respuestas.push({
+        id: crearIdRespuesta(),
+        nombre: nombre,
+        texto: texto,
+        fecha: new Date().toISOString()
+    });
+
+    guardarPublicaciones();
+
+    respuestaEnCreacion = null;
+
+    mostrarPublicaciones();
 }
 
 
 // Cargar en el formulario solo el comentario seleccionado
 
 function iniciarEdicionComentario(idPublicacion, idComentario) {
+
+    respuestaEnCreacion = null;
 
     comentarioEnEdicion = {
         idPublicacion: idPublicacion,
@@ -1347,6 +1817,10 @@ function eliminarComentario(idPublicacion, idComentario) {
 
     if (esComentarioEnEdicion(idPublicacion, idComentario)) {
         comentarioEnEdicion = null;
+    }
+
+    if (esRespuestaEnCreacion(idPublicacion, idComentario)) {
+        respuestaEnCreacion = null;
     }
 
     guardarPublicaciones();
@@ -1568,7 +2042,8 @@ function agregarComentario(
         id: crearIdComentario(publicacion.comentarios),
         nombre: nombre,
         texto: texto,
-        fecha: new Date().toISOString()
+        fecha: new Date().toISOString(),
+        respuestas: []
     };
 
     publicacion.comentarios.push(nuevoComentario);
@@ -1807,6 +2282,13 @@ function eliminarPublicacion(idPublicacion) {
         comentarioEnEdicion.idPublicacion === idPublicacion
     ) {
         comentarioEnEdicion = null;
+    }
+
+    if (
+        respuestaEnCreacion !== null &&
+        respuestaEnCreacion.idPublicacion === idPublicacion
+    ) {
+        respuestaEnCreacion = null;
     }
 
     guardarPublicaciones();
