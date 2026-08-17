@@ -86,6 +86,21 @@
 
                 </div>
 
+                <div class="campo">
+
+                    <label for="etiqueta">
+                        Tema
+                    </label>
+
+                    <select id="etiqueta" name="etiqueta">
+                        <option value="General">General</option>
+                        <option value="Estudio">Estudio</option>
+                        <option value="Evento">Evento</option>
+                        <option value="Ayuda">Ayuda</option>
+                    </select>
+
+                </div>
+
                 <button
                     type="submit"
                     class="boton-publicar"
@@ -131,16 +146,34 @@
                 </div>
             </div>
 
-            <div class="control-orden">
-                <label for="orden-publicaciones">
-                    Ordenar por
-                </label>
+            <div class="controles-lista">
 
-                <select id="orden-publicaciones" name="orden-publicaciones">
-                    <option value="recientes">Recientes</option>
-                    <option value="antiguas">Antiguas</option>
-                    <option value="mas-gustadas">Más gustadas</option>
-                </select>
+                <div class="control-etiqueta">
+                    <label for="filtro-etiqueta">
+                        Filtrar por tema
+                    </label>
+
+                    <select id="filtro-etiqueta" name="filtro-etiqueta">
+                        <option value="Todas">Todas</option>
+                        <option value="General">General</option>
+                        <option value="Estudio">Estudio</option>
+                        <option value="Evento">Evento</option>
+                        <option value="Ayuda">Ayuda</option>
+                    </select>
+                </div>
+
+                <div class="control-orden">
+                    <label for="orden-publicaciones">
+                        Ordenar por
+                    </label>
+
+                    <select id="orden-publicaciones" name="orden-publicaciones">
+                        <option value="recientes">Recientes</option>
+                        <option value="antiguas">Antiguas</option>
+                        <option value="mas-gustadas">Más gustadas</option>
+                    </select>
+                </div>
+
             </div>
 
             <form

@@ -99,12 +99,28 @@ textarea {
         box-shadow 0.2s;
 }
 
+.campo select {
+    width: 100%;
+    padding: 13px 14px;
+
+    background-color: #ffffff;
+    color: #1f2937;
+
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+
+    font: inherit;
+    outline: none;
+    cursor: pointer;
+}
+
 textarea {
     resize: vertical;
 }
 
 input:focus,
-textarea:focus {
+textarea:focus,
+.campo select:focus {
     border-color: #3159c7;
     box-shadow: 0 0 0 3px rgba(49, 89, 199, 0.13);
 }
@@ -213,21 +229,30 @@ textarea:focus {
 
 /* Búsqueda de publicaciones */
 
-.control-orden {
+.controles-lista {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    gap: 10px;
+    justify-content: space-between;
+    gap: 16px;
 
     margin-bottom: 18px;
 }
 
-.control-orden label {
+.control-orden,
+.control-etiqueta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.control-orden label,
+.control-etiqueta label {
     margin-bottom: 0;
     white-space: nowrap;
 }
 
-.control-orden select {
+.control-orden select,
+.control-etiqueta select {
     padding: 10px 36px 10px 12px;
 
     background-color: #ffffff;
@@ -240,7 +265,8 @@ textarea:focus {
     cursor: pointer;
 }
 
-.control-orden select:focus {
+.control-orden select:focus,
+.control-etiqueta select:focus {
     border-color: #3159c7;
     box-shadow: 0 0 0 3px rgba(49, 89, 199, 0.13);
     outline: none;
@@ -359,6 +385,37 @@ textarea:focus {
     font-size: 13px;
 
     white-space: nowrap;
+}
+
+.etiqueta-publicacion {
+    display: inline-block;
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.etiqueta-general {
+    background-color: #e5e7eb;
+    color: #4b5563;
+}
+
+.etiqueta-estudio {
+    background-color: #dbeafe;
+    color: #1d4ed8;
+}
+
+.etiqueta-evento {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.etiqueta-ayuda {
+    background-color: #dcfce7;
+    color: #166534;
 }
 
 .publicacion p {
@@ -861,12 +918,19 @@ textarea:focus {
 
 @media (max-width: 450px) {
 
-    .control-orden {
+    .controles-lista {
         align-items: stretch;
         flex-direction: column;
     }
 
-    .control-orden select {
+    .control-orden,
+    .control-etiqueta {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .control-orden select,
+    .control-etiqueta select {
         width: 100%;
     }
 

@@ -2,6 +2,12 @@
 const CLAVE_LOCAL_STORAGE = "publicacionesRedSocial";
 const LIMITE_CARACTERES_MENSAJE = 200;
 const LIMITE_CARACTERES_COMENTARIO = 250;
+const ETIQUETAS_PUBLICACION = [
+    "General",
+    "Estudio",
+    "Evento",
+    "Ayuda"
+];
 
 
 // Elementos del HTML
@@ -12,6 +18,7 @@ const formulario = document.getElementById(
 
 const campoNombre = document.getElementById("nombre");
 const campoMensaje = document.getElementById("mensaje");
+const campoEtiqueta = document.getElementById("etiqueta");
 
 const errorNombre = document.getElementById(
     "error-nombre"
@@ -49,6 +56,10 @@ const resumenBusqueda = document.getElementById(
 
 const selectorOrden = document.getElementById(
     "orden-publicaciones"
+);
+
+const selectorEtiqueta = document.getElementById(
+    "filtro-etiqueta"
 );
 
 const totalPublicaciones = document.getElementById(
@@ -91,6 +102,9 @@ let terminoBusqueda = "";
 // El selector siempre inicia mostrando primero las más recientes
 let criterioOrden = "recientes";
 
+// El filtro siempre inicia mostrando todas las etiquetas
+let criterioEtiqueta = "Todas";
+
 mostrarPublicaciones();
 
 
@@ -102,6 +116,7 @@ formulario.addEventListener("submit", function (evento) {
 
     const nombre = campoNombre.value.trim();
     const mensaje = campoMensaje.value.trim();
+    const etiqueta = normalizarEtiqueta(campoEtiqueta.value);
 
     limpiarErrores();
 
@@ -160,6 +175,7 @@ formulario.addEventListener("submit", function (evento) {
         nombre: nombre,
         mensaje: mensaje,
         fecha: new Date().toISOString(),
+        etiqueta: etiqueta,
         reacciones: {
             meGusta: 0,
             meEncanta: 0,
@@ -311,6 +327,16 @@ selectorOrden.addEventListener("change", function () {
 });
 
 
+// Filtrar por etiqueta sin modificar las publicaciones guardadas
+
+selectorEtiqueta.addEventListener("change", function () {
+
+    criterioEtiqueta = selectorEtiqueta.value;
+
+    mostrarPublicaciones();
+});
+
+
 // Dejar el campo de búsqueda vacío
 
 function reiniciarBusqueda() {
@@ -349,15 +375,36 @@ function filtrarPublicaciones() {
 
     const textoBuscado = obtenerTextoBuscado();
 
-    // Sin búsqueda se muestran todas las publicaciones
-
-    if (textoBuscado === "") {
-        return publicaciones;
-    }
-
     return publicaciones.filter(function (publicacion) {
-        return coincideConBusqueda(publicacion, textoBuscado);
+
+        const coincideConEtiqueta =
+            criterioEtiqueta === "Todas" ||
+            obtenerEtiqueta(publicacion) === criterioEtiqueta;
+
+        const coincideConTexto =
+            textoBuscado === "" ||
+            coincideConBusqueda(publicacion, textoBuscado);
+
+        return coincideConEtiqueta && coincideConTexto;
     });
+}
+
+
+// Usar General cuando una publicación no tenga una etiqueta válida
+
+function normalizarEtiqueta(etiqueta) {
+
+    return ETIQUETAS_PUBLICACION.includes(etiqueta)
+        ? etiqueta
+        : "General";
+}
+
+
+// Obtener la etiqueta sin modificar la publicación original
+
+function obtenerEtiqueta(publicacion) {
+
+    return normalizarEtiqueta(publicacion.etiqueta);
 }
 
 
@@ -412,6 +459,7 @@ function obtenerTiempo(fecha) {
 function actualizarMensajesDeLista(cantidadVisible) {
 
     const textoBuscado = terminoBusqueda.trim();
+    const filtroActivo = criterioEtiqueta !== "Todas";
 
 
     // Todavía no se ha publicado nada
@@ -433,8 +481,23 @@ function actualizarMensajesDeLista(cantidadVisible) {
 
     if (cantidadVisible === 0) {
 
-        mensajeVacio.textContent =
-            `No se encontraron publicaciones con "${textoBuscado}".`;
+        if (textoBuscado !== "" && filtroActivo) {
+
+            mensajeVacio.textContent =
+                `No se encontraron publicaciones de ${criterioEtiqueta} ` +
+                `con "${textoBuscado}".`;
+
+        } else if (filtroActivo) {
+
+            mensajeVacio.textContent =
+                `No hay publicaciones con la etiqueta ` +
+                `"${criterioEtiqueta}".`;
+
+        } else {
+
+            mensajeVacio.textContent =
+                `No se encontraron publicaciones con "${textoBuscado}".`;
+        }
 
         mensajeVacio.style.display = "block";
 
@@ -562,6 +625,8 @@ function normalizarPublicacion(publicacion) {
         mensaje: publicacion.mensaje,
 
         fecha: obtenerFecha(publicacion),
+
+        etiqueta: normalizarEtiqueta(publicacion.etiqueta),
 
         reacciones: normalizarReacciones(publicacion),
 
@@ -931,6 +996,25 @@ function mostrarPublicaciones() {
                 fechaPublicacion
             );
         }
+
+
+        const etiqueta = obtenerEtiqueta(publicacion);
+
+        const etiquetaPublicacion = document.createElement("span");
+
+        etiquetaPublicacion.classList.add(
+            "etiqueta-publicacion",
+            `etiqueta-${etiqueta.toLowerCase()}`
+        );
+
+        etiquetaPublicacion.setAttribute(
+            "aria-label",
+            `Tema: ${etiqueta}`
+        );
+
+        etiquetaPublicacion.textContent = etiqueta;
+
+        encabezadoPublicacion.appendChild(etiquetaPublicacion);
 
 
         const contenidoPublicacion =
