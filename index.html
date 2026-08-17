@@ -101,12 +101,24 @@
 
                 </div>
 
-                <button
-                    type="submit"
-                    class="boton-publicar"
-                >
-                    Publicar
-                </button>
+                <div class="acciones-formulario">
+
+                    <button
+                        type="submit"
+                        class="boton-publicar"
+                    >
+                        Publicar
+                    </button>
+
+                    <button
+                        type="button"
+                        id="descartar-borrador"
+                        class="boton-descartar-borrador"
+                    >
+                        Descartar borrador
+                    </button>
+
+                </div>
 
             </form>
 
@@ -172,6 +184,18 @@
                         <option value="antiguas">Antiguas</option>
                         <option value="mas-gustadas">Más gustadas</option>
                     </select>
+                </div>
+
+                <div class="control-favoritas">
+                    <label for="filtro-favoritas">
+                        Solo favoritas
+                    </label>
+
+                    <input
+                        type="checkbox"
+                        id="filtro-favoritas"
+                        name="filtro-favoritas"
+                    >
                 </div>
 
             </div>

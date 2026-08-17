@@ -1,5 +1,6 @@
 // Clave utilizada para guardar las publicaciones
 const CLAVE_LOCAL_STORAGE = "publicacionesRedSocial";
+const CLAVE_BORRADOR_PUBLICACION = "borradorPublicacionRedSocial";
 const LIMITE_CARACTERES_MENSAJE = 200;
 const LIMITE_CARACTERES_COMENTARIO = 250;
 const ETIQUETAS_PUBLICACION = [
@@ -62,6 +63,14 @@ const selectorEtiqueta = document.getElementById(
     "filtro-etiqueta"
 );
 
+const filtroFavoritas = document.getElementById(
+    "filtro-favoritas"
+);
+
+const botonDescartarBorrador = document.getElementById(
+    "descartar-borrador"
+);
+
 const totalPublicaciones = document.getElementById(
     "total-publicaciones"
 );
@@ -104,6 +113,11 @@ let criterioOrden = "recientes";
 
 // El filtro siempre inicia mostrando todas las etiquetas
 let criterioEtiqueta = "Todas";
+
+// El filtro de favoritas inicia mostrando todas las publicaciones
+let mostrarSoloFavoritas = false;
+
+cargarBorradorPublicacion();
 
 mostrarPublicaciones();
 
@@ -181,6 +195,7 @@ formulario.addEventListener("submit", function (evento) {
             meEncanta: 0,
             meDivierte: 0
         },
+        favorita: false,
         comentarios: []
     };
 
@@ -208,6 +223,11 @@ formulario.addEventListener("submit", function (evento) {
     // Limpiar el formulario
 
     formulario.reset();
+    campoNombre.value = "";
+    campoMensaje.value = "";
+    campoEtiqueta.value = "General";
+
+    limpiarBorradorPublicacion();
 
     actualizarContadorCaracteres(
         campoMensaje,
@@ -221,6 +241,8 @@ formulario.addEventListener("submit", function (evento) {
 // Contador de caracteres
 
 campoMensaje.addEventListener("input", function () {
+
+    guardarBorradorPublicacion();
 
     actualizarContadorCaracteres(
         campoMensaje,
@@ -275,6 +297,8 @@ function actualizarContadorCaracteres(campo, contador) {
 // Quitar el error del nombre mientras se escribe
 
 campoNombre.addEventListener("input", function () {
+
+    guardarBorradorPublicacion();
 
     quitarError(
         campoNombre,
@@ -337,6 +361,24 @@ selectorEtiqueta.addEventListener("change", function () {
 });
 
 
+// Mostrar u ocultar publicaciones no favoritas
+
+filtroFavoritas.addEventListener("change", function () {
+
+    mostrarSoloFavoritas = filtroFavoritas.checked === true;
+
+    mostrarPublicaciones();
+});
+
+
+// Descartar el borrador actual del formulario
+
+botonDescartarBorrador.addEventListener("click", function () {
+
+    descartarBorradorPublicacion();
+});
+
+
 // Dejar el campo de búsqueda vacío
 
 function reiniciarBusqueda() {
@@ -344,6 +386,105 @@ function reiniciarBusqueda() {
     campoBusqueda.value = "";
 
     terminoBusqueda = "";
+}
+
+
+function guardarBorradorPublicacion() {
+
+    const borrador = {
+        nombre: campoNombre.value,
+        mensaje: campoMensaje.value
+    };
+
+    if (
+        borrador.nombre === "" &&
+        borrador.mensaje === ""
+    ) {
+        limpiarBorradorPublicacion();
+        return;
+    }
+
+    localStorage.setItem(
+        CLAVE_BORRADOR_PUBLICACION,
+        JSON.stringify(borrador)
+    );
+}
+
+
+function cargarBorradorPublicacion() {
+
+    const borradorGuardado =
+        localStorage.getItem(CLAVE_BORRADOR_PUBLICACION);
+
+    if (borradorGuardado === null || borradorGuardado === "") {
+        actualizarContadorCaracteres(
+            campoMensaje,
+            contadorCaracteres
+        );
+        return;
+    }
+
+    try {
+
+        const borrador = JSON.parse(borradorGuardado);
+
+        if (
+            borrador !== null &&
+            typeof borrador === "object"
+        ) {
+            campoNombre.value =
+                typeof borrador.nombre === "string"
+                    ? borrador.nombre
+                    : "";
+
+            campoMensaje.value =
+                typeof borrador.mensaje === "string"
+                    ? borrador.mensaje
+                    : "";
+        }
+
+    } catch (error) {
+
+        console.error(
+            "No se pudo cargar el borrador.",
+            error
+        );
+    }
+
+    actualizarContadorCaracteres(
+        campoMensaje,
+        contadorCaracteres
+    );
+}
+
+
+function limpiarBorradorPublicacion() {
+
+    if (typeof localStorage.removeItem === "function") {
+        localStorage.removeItem(CLAVE_BORRADOR_PUBLICACION);
+        return;
+    }
+
+    localStorage.setItem(CLAVE_BORRADOR_PUBLICACION, "");
+}
+
+
+function descartarBorradorPublicacion() {
+
+    formulario.reset();
+    campoNombre.value = "";
+    campoMensaje.value = "";
+    campoEtiqueta.value = "General";
+
+    limpiarBorradorPublicacion();
+    limpiarErrores();
+
+    actualizarContadorCaracteres(
+        campoMensaje,
+        contadorCaracteres
+    );
+
+    campoNombre.focus();
 }
 
 
@@ -385,7 +526,15 @@ function filtrarPublicaciones() {
             textoBuscado === "" ||
             coincideConBusqueda(publicacion, textoBuscado);
 
-        return coincideConEtiqueta && coincideConTexto;
+        const coincideConFavorita =
+            !mostrarSoloFavoritas ||
+            esPublicacionFavorita(publicacion);
+
+        return (
+            coincideConEtiqueta &&
+            coincideConTexto &&
+            coincideConFavorita
+        );
     });
 }
 
@@ -405,6 +554,14 @@ function normalizarEtiqueta(etiqueta) {
 function obtenerEtiqueta(publicacion) {
 
     return normalizarEtiqueta(publicacion.etiqueta);
+}
+
+
+// Las publicaciones antiguas se consideran no favoritas
+
+function esPublicacionFavorita(publicacion) {
+
+    return publicacion.favorita === true;
 }
 
 
@@ -460,6 +617,7 @@ function actualizarMensajesDeLista(cantidadVisible) {
 
     const textoBuscado = terminoBusqueda.trim();
     const filtroActivo = criterioEtiqueta !== "Todas";
+    const filtroFavoritasActivo = mostrarSoloFavoritas;
 
 
     // Todavía no se ha publicado nada
@@ -481,7 +639,34 @@ function actualizarMensajesDeLista(cantidadVisible) {
 
     if (cantidadVisible === 0) {
 
-        if (textoBuscado !== "" && filtroActivo) {
+        if (
+            textoBuscado !== "" &&
+            filtroActivo &&
+            filtroFavoritasActivo
+        ) {
+
+            mensajeVacio.textContent =
+                `No se encontraron publicaciones favoritas de ` +
+                `${criterioEtiqueta} con "${textoBuscado}".`;
+
+        } else if (textoBuscado !== "" && filtroFavoritasActivo) {
+
+            mensajeVacio.textContent =
+                `No se encontraron publicaciones favoritas ` +
+                `con "${textoBuscado}".`;
+
+        } else if (filtroActivo && filtroFavoritasActivo) {
+
+            mensajeVacio.textContent =
+                `No hay publicaciones favoritas con la etiqueta ` +
+                `"${criterioEtiqueta}".`;
+
+        } else if (filtroFavoritasActivo) {
+
+            mensajeVacio.textContent =
+                "No hay publicaciones favoritas.";
+
+        } else if (textoBuscado !== "" && filtroActivo) {
 
             mensajeVacio.textContent =
                 `No se encontraron publicaciones de ${criterioEtiqueta} ` +
@@ -629,6 +814,8 @@ function normalizarPublicacion(publicacion) {
         etiqueta: normalizarEtiqueta(publicacion.etiqueta),
 
         reacciones: normalizarReacciones(publicacion),
+
+        favorita: esPublicacionFavorita(publicacion),
 
         comentarios: normalizarComentarios(publicacion)
     };
@@ -955,6 +1142,10 @@ function mostrarPublicaciones() {
 
         articulo.classList.add("publicacion");
 
+        if (esPublicacionFavorita(publicacion)) {
+            articulo.classList.add("publicacion-favorita");
+        }
+
 
         const nombreEstudiante =
             document.createElement("h3");
@@ -1085,6 +1276,31 @@ function mostrarPublicaciones() {
         });
 
 
+        const botonFavorita =
+            document.createElement("button");
+
+        botonFavorita.type = "button";
+        botonFavorita.classList.add("boton-favorita");
+
+        if (esPublicacionFavorita(publicacion)) {
+            botonFavorita.classList.add("activo");
+        }
+
+        botonFavorita.textContent =
+            esPublicacionFavorita(publicacion)
+                ? "Quitar de Favoritos"
+                : "Marcar Favorito";
+
+        botonFavorita.setAttribute(
+            "aria-pressed",
+            esPublicacionFavorita(publicacion) ? "true" : "false"
+        );
+
+        botonFavorita.addEventListener("click", function () {
+            alternarFavorita(publicacion.id);
+        });
+
+
         const botonEditar =
             document.createElement("button");
 
@@ -1123,6 +1339,7 @@ function mostrarPublicaciones() {
         );
 
 
+        grupoBotones.appendChild(botonFavorita);
         grupoBotones.appendChild(botonEditar);
         grupoBotones.appendChild(botonEliminar);
 
@@ -2418,6 +2635,24 @@ function agregarReaccion(idPublicacion, tipoReaccion) {
 function alternarMeGusta(idPublicacion) {
 
     agregarReaccion(idPublicacion, "meGusta");
+}
+
+
+// Marcar o quitar una publicacion de favoritas sin tocar su actividad
+
+function alternarFavorita(idPublicacion) {
+
+    const publicacion = buscarPublicacion(idPublicacion);
+
+    if (publicacion === undefined) {
+        return;
+    }
+
+    publicacion.favorita = !esPublicacionFavorita(publicacion);
+
+    guardarPublicaciones();
+
+    mostrarPublicaciones();
 }
 
 

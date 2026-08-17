@@ -155,6 +155,12 @@ textarea:focus,
 
 /* Botón */
 
+.acciones-formulario {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+}
+
 .boton-publicar {
     width: 100%;
     padding: 13px 18px;
@@ -181,6 +187,33 @@ textarea:focus,
 
 .boton-publicar:active {
     transform: scale(0.99);
+}
+
+.boton-descartar-borrador {
+    padding: 13px 18px;
+
+    background-color: #ffffff;
+    color: #4b5563;
+
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s,
+        transform 0.2s;
+}
+
+.boton-descartar-borrador:hover {
+    background-color: #f1f5f9;
+}
+
+.boton-descartar-borrador:active {
+    transform: scale(0.98);
 }
 
 /* Publicaciones */
@@ -239,14 +272,16 @@ textarea:focus,
 }
 
 .control-orden,
-.control-etiqueta {
+.control-etiqueta,
+.control-favoritas {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
 .control-orden label,
-.control-etiqueta label {
+.control-etiqueta label,
+.control-favoritas label {
     margin-bottom: 0;
     white-space: nowrap;
 }
@@ -270,6 +305,14 @@ textarea:focus,
     border-color: #3159c7;
     box-shadow: 0 0 0 3px rgba(49, 89, 199, 0.13);
     outline: none;
+}
+
+.control-favoritas input {
+    width: 18px;
+    height: 18px;
+
+    accent-color: #3159c7;
+    cursor: pointer;
 }
 
 .formulario-busqueda {
@@ -362,6 +405,12 @@ textarea:focus,
 
     border: 1px solid #dfe5ec;
     border-radius: 12px;
+}
+
+.publicacion-favorita {
+    background-color: #fffdf2;
+    border-color: #facc15;
+    box-shadow: inset 4px 0 0 #f59e0b;
 }
 
 .encabezado-publicacion {
@@ -494,6 +543,10 @@ textarea:focus,
         padding: 22px;
     }
 
+    .acciones-formulario {
+        grid-template-columns: 1fr;
+    }
+
     .encabezado h1 {
         font-size: 27px;
     }
@@ -541,7 +594,8 @@ textarea:focus,
     gap: 10px;
 }
 
-.boton-me-gusta {
+.boton-me-gusta,
+.boton-favorita {
     padding: 9px 15px;
 
     background-color: #e8efff;
@@ -578,22 +632,26 @@ textarea:focus,
     background-color: #d6e2ff;
 }
 
-.boton-me-gusta:hover {
+.boton-me-gusta:hover,
+.boton-favorita:hover {
     background-color: #d6e2ff;
 }
 
-.boton-me-gusta.activo {
+.boton-me-gusta.activo,
+.boton-favorita.activo {
     background-color: #3159c7;
     color: #ffffff;
 
     border-color: #3159c7;
 }
 
-.boton-me-gusta.activo:hover {
+.boton-me-gusta.activo:hover,
+.boton-favorita.activo:hover {
     background-color: #2447a8;
 }
 
-.boton-me-gusta:active {
+.boton-me-gusta:active,
+.boton-favorita:active {
     transform: scale(0.96);
 }
 
@@ -924,7 +982,8 @@ textarea:focus,
     }
 
     .control-orden,
-    .control-etiqueta {
+    .control-etiqueta,
+    .control-favoritas {
         align-items: stretch;
         flex-direction: column;
     }
@@ -950,6 +1009,7 @@ textarea:focus,
     }
 
     .boton-me-gusta,
+    .boton-favorita,
     .boton-reaccion,
     .boton-editar,
     .boton-eliminar {
