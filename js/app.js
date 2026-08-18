@@ -118,6 +118,14 @@ const mensajeRespaldo = document.getElementById(
     "mensaje-respaldo"
 );
 
+const listaModeracion = document.getElementById(
+    "lista-moderacion"
+);
+
+const moderacionVacia = document.getElementById(
+    "moderacion-vacia"
+);
+
 
 // Cargar las publicaciones guardadas
 
@@ -146,6 +154,9 @@ let mostrarSoloFavoritas = false;
 
 // La lista siempre inicia en la primera página
 let paginaActual = 1;
+
+// Identifica la publicación cuyo formulario de reporte está abierto
+let idPublicacionEnReporte = null;
 
 cargarBorradorPublicacion();
 
@@ -226,6 +237,7 @@ formulario.addEventListener("submit", function (evento) {
             meDivierte: 0
         },
         favorita: false,
+        reporte: null,
         comentarios: []
     };
 
@@ -1258,8 +1270,46 @@ function normalizarPublicacion(publicacion) {
 
         favorita: esPublicacionFavorita(publicacion),
 
+        reporte: normalizarReporte(publicacion.reporte),
+
         comentarios: normalizarComentarios(publicacion)
     };
+}
+
+
+// Conservar únicamente reportes con un motivo permitido
+
+function normalizarReporte(reporte) {
+
+    if (reporte === null || typeof reporte !== "object") {
+        return null;
+    }
+
+    if (
+        reporte.motivo !== "Spam" &&
+        reporte.motivo !== "Ofensivo" &&
+        reporte.motivo !== "Otro"
+    ) {
+        return null;
+    }
+
+    return {
+        motivo: reporte.motivo,
+        fecha:
+            typeof reporte.fecha === "string"
+                ? reporte.fecha
+                : ""
+    };
+}
+
+
+function obtenerReporte(publicacion) {
+
+    if (publicacion.reporte === undefined) {
+        return null;
+    }
+
+    return publicacion.reporte;
 }
 
 
@@ -1565,6 +1615,8 @@ function mostrarPublicaciones() {
 
     actualizarResumenActividad();
 
+    mostrarModeracion();
+
     const publicacionesVisibles = ordenarPublicaciones(
         filtrarPublicaciones()
     );
@@ -1652,6 +1704,16 @@ function mostrarPublicaciones() {
         etiquetaPublicacion.textContent = etiqueta;
 
         encabezadoPublicacion.appendChild(etiquetaPublicacion);
+
+        if (obtenerReporte(publicacion) !== null) {
+
+            const insigniaReporte = document.createElement("span");
+
+            insigniaReporte.classList.add("insignia-reportada");
+            insigniaReporte.textContent = "Reportada";
+
+            encabezadoPublicacion.appendChild(insigniaReporte);
+        }
 
 
         const contenidoPublicacion =
@@ -1775,6 +1837,19 @@ function mostrarPublicaciones() {
             "boton-eliminar"
         );
 
+
+        const botonReportar = document.createElement("button");
+
+        botonReportar.type = "button";
+        botonReportar.classList.add("boton-reportar");
+        botonReportar.textContent =
+            obtenerReporte(publicacion) === null ? "Reportar" : "Reportada";
+        botonReportar.disabled = obtenerReporte(publicacion) !== null;
+
+        botonReportar.addEventListener("click", function () {
+            iniciarReporte(publicacion.id);
+        });
+
         botonEliminar.textContent = "Eliminar";
 
         botonEliminar.addEventListener(
@@ -1786,11 +1861,16 @@ function mostrarPublicaciones() {
 
 
         grupoBotones.appendChild(botonFavorita);
+        grupoBotones.appendChild(botonReportar);
         grupoBotones.appendChild(botonEditar);
         grupoBotones.appendChild(botonEliminar);
 
         acciones.appendChild(contadoresReacciones);
         acciones.appendChild(grupoBotones);
+
+        if (idPublicacionEnReporte === publicacion.id) {
+            acciones.appendChild(crearFormularioReporte(publicacion.id));
+        }
 
 
         const seccionComentarios =
@@ -3003,6 +3083,191 @@ function cancelarEdicion() {
 }
 
 
+// Abrir el formulario de reporte de una publicación
+
+function iniciarReporte(idPublicacion) {
+
+    const publicacion = buscarPublicacion(idPublicacion);
+
+    if (
+        publicacion === undefined ||
+        obtenerReporte(publicacion) !== null
+    ) {
+        return;
+    }
+
+    idPublicacionEnReporte = idPublicacion;
+
+    mostrarPublicaciones();
+}
+
+
+// Crear la selección de motivo y sus acciones
+
+function crearFormularioReporte(idPublicacion) {
+
+    const formularioReporte = document.createElement("form");
+    formularioReporte.classList.add("formulario-reporte");
+
+    const etiquetaMotivo = document.createElement("label");
+    etiquetaMotivo.textContent = "Motivo del reporte";
+
+    const selectorMotivo = document.createElement("select");
+    selectorMotivo.setAttribute("aria-label", "Motivo del reporte");
+
+    ["Spam", "Ofensivo", "Otro"].forEach(function (motivo) {
+        const opcion = document.createElement("option");
+        opcion.value = motivo;
+        opcion.textContent = motivo;
+        selectorMotivo.appendChild(opcion);
+    });
+
+    selectorMotivo.value = "Spam";
+
+    const botonesReporte = document.createElement("div");
+    botonesReporte.classList.add("botones-reporte");
+
+    const botonConfirmar = document.createElement("button");
+    botonConfirmar.type = "submit";
+    botonConfirmar.classList.add("boton-confirmar-reporte");
+    botonConfirmar.textContent = "Confirmar reporte";
+
+    const botonCancelar = document.createElement("button");
+    botonCancelar.type = "button";
+    botonCancelar.classList.add("boton-cancelar-reporte");
+    botonCancelar.textContent = "Cancelar";
+
+    botonCancelar.addEventListener("click", function () {
+        cancelarReporte();
+    });
+
+    formularioReporte.addEventListener("submit", function (evento) {
+        evento.preventDefault();
+        guardarReporte(idPublicacion, selectorMotivo.value);
+    });
+
+    botonesReporte.appendChild(botonConfirmar);
+    botonesReporte.appendChild(botonCancelar);
+    formularioReporte.appendChild(etiquetaMotivo);
+    formularioReporte.appendChild(selectorMotivo);
+    formularioReporte.appendChild(botonesReporte);
+
+    return formularioReporte;
+}
+
+
+// Guardar como máximo un reporte dentro de la publicación elegida
+
+function guardarReporte(idPublicacion, motivo) {
+
+    const publicacion = buscarPublicacion(idPublicacion);
+
+    if (
+        publicacion === undefined ||
+        obtenerReporte(publicacion) !== null ||
+        (motivo !== "Spam" && motivo !== "Ofensivo" && motivo !== "Otro")
+    ) {
+        return;
+    }
+
+    publicacion.reporte = {
+        motivo: motivo,
+        fecha: new Date().toISOString()
+    };
+
+    idPublicacionEnReporte = null;
+    guardarPublicaciones();
+    mostrarPublicaciones();
+}
+
+
+// Cerrar el formulario sin registrar información
+
+function cancelarReporte() {
+
+    idPublicacionEnReporte = null;
+    mostrarPublicaciones();
+}
+
+
+// Mostrar las publicaciones pendientes de moderación
+
+function mostrarModeracion() {
+
+    listaModeracion.innerHTML = "";
+
+    const reportadas = publicaciones.filter(function (publicacion) {
+        return obtenerReporte(publicacion) !== null;
+    });
+
+    moderacionVacia.style.display =
+        reportadas.length === 0 ? "block" : "none";
+
+    reportadas.forEach(function (publicacion) {
+
+        const tarjeta = document.createElement("article");
+        tarjeta.classList.add("elemento-moderacion");
+
+        const autor = document.createElement("h3");
+        autor.textContent = publicacion.nombre;
+
+        const mensaje = document.createElement("p");
+        mensaje.textContent = publicacion.mensaje;
+
+        const motivo = document.createElement("strong");
+        motivo.classList.add("motivo-reporte");
+        motivo.textContent = `Motivo: ${publicacion.reporte.motivo}`;
+
+        const accionesModeracion = document.createElement("div");
+        accionesModeracion.classList.add("acciones-moderacion");
+
+        const botonDescartar = document.createElement("button");
+        botonDescartar.type = "button";
+        botonDescartar.classList.add("boton-descartar-reporte");
+        botonDescartar.textContent = "Descartar reporte";
+        botonDescartar.addEventListener("click", function () {
+            descartarReporte(publicacion.id);
+        });
+
+        const botonEliminar = document.createElement("button");
+        botonEliminar.type = "button";
+        botonEliminar.classList.add("boton-eliminar");
+        botonEliminar.textContent = "Eliminar publicación";
+        botonEliminar.addEventListener("click", function () {
+            eliminarDesdeModeracion(publicacion.id);
+        });
+
+        accionesModeracion.appendChild(botonDescartar);
+        accionesModeracion.appendChild(botonEliminar);
+        tarjeta.appendChild(autor);
+        tarjeta.appendChild(mensaje);
+        tarjeta.appendChild(motivo);
+        tarjeta.appendChild(accionesModeracion);
+        listaModeracion.appendChild(tarjeta);
+    });
+}
+
+
+function descartarReporte(idPublicacion) {
+
+    const publicacion = buscarPublicacion(idPublicacion);
+
+    if (publicacion === undefined || obtenerReporte(publicacion) === null) {
+        return;
+    }
+
+    publicacion.reporte = null;
+    guardarPublicaciones();
+    mostrarPublicaciones();
+}
+
+
+function eliminarDesdeModeracion(idPublicacion) {
+
+    eliminarPublicacion(idPublicacion);
+}
+
+
 // Eliminar una publicacion despues de confirmar
 
 function eliminarPublicacion(idPublicacion) {
@@ -3036,6 +3301,10 @@ function eliminarPublicacion(idPublicacion) {
         respuestaEnCreacion.idPublicacion === idPublicacion
     ) {
         respuestaEnCreacion = null;
+    }
+
+    if (idPublicacionEnReporte === idPublicacion) {
+        idPublicacionEnReporte = null;
     }
 
     guardarPublicaciones();

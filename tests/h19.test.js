@@ -215,6 +215,7 @@ const PUBLICACIONES_COMPLETAS = [
             meDivierte: 1
         },
         favorita: true,
+        reporte: null,
         comentarios: [
             {
                 id: 11,
@@ -244,6 +245,7 @@ const PUBLICACIONES_COMPLETAS = [
             meDivierte: 0
         },
         favorita: false,
+        reporte: null,
         comentarios: []
     }
 ];

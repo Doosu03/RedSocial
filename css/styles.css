@@ -698,6 +698,7 @@ textarea:focus,
 
 .acciones-publicacion {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
     gap: 15px;
@@ -706,6 +707,118 @@ textarea:focus,
     padding-top: 14px;
 
     border-top: 1px solid #dfe5ec;
+}
+
+.insignia-reportada {
+    padding: 4px 9px;
+    background-color: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.boton-reportar {
+    padding: 9px 12px;
+    background-color: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.boton-reportar:hover:not(:disabled) {
+    background-color: #ffedd5;
+}
+
+.boton-reportar:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.formulario-reporte {
+    flex-basis: 100%;
+    padding: 14px;
+    background-color: #fffaf5;
+    border: 1px solid #fed7aa;
+    border-radius: 10px;
+}
+
+.formulario-reporte select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font: inherit;
+}
+
+.botones-reporte,
+.acciones-moderacion {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.boton-confirmar-reporte,
+.boton-cancelar-reporte,
+.boton-descartar-reporte {
+    padding: 9px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.boton-confirmar-reporte {
+    background-color: #c2410c;
+    color: #ffffff;
+    border: 1px solid #c2410c;
+}
+
+.boton-cancelar-reporte,
+.boton-descartar-reporte {
+    background-color: #ffffff;
+    color: #4b5563;
+    border: 1px solid #cbd5e1;
+}
+
+/* Moderación */
+
+.seccion-moderacion {
+    margin-top: 24px;
+}
+
+.seccion-moderacion h2 {
+    margin-bottom: 8px;
+}
+
+.descripcion-moderacion {
+    margin-bottom: 18px;
+    color: #6b7280;
+}
+
+.lista-moderacion {
+    display: grid;
+    gap: 12px;
+}
+
+.elemento-moderacion {
+    padding: 16px;
+    background-color: #fffaf5;
+    border: 1px solid #fed7aa;
+    border-radius: 10px;
+}
+
+.elemento-moderacion h3,
+.elemento-moderacion p {
+    margin-bottom: 8px;
+}
+
+.motivo-reporte {
+    color: #c2410c;
 }
 
 .contador-me-gusta {
@@ -1157,9 +1270,15 @@ textarea:focus,
     .boton-me-gusta,
     .boton-favorita,
     .boton-reaccion,
+    .boton-reportar,
     .boton-editar,
     .boton-eliminar {
         width: 100%;
+    }
+
+    .botones-reporte,
+    .acciones-moderacion {
+        flex-direction: column;
     }
 
     .botones-edicion {

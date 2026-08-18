@@ -2,7 +2,7 @@
 
 Proyecto académico desarrollado con HTML, CSS y JavaScript.
 
-Actualmente el proyecto implementa las historias 1, 3, 4 y 6 a 19, incluida la edición de publicaciones y comentarios, búsqueda, ordenamiento, reacciones múltiples, respuestas, etiquetas por tema, paginación de la lista y respaldo de la información.
+Actualmente el proyecto implementa las historias 1, 3, 4 y 6 a 20, incluida la edición de publicaciones y comentarios, búsqueda, ordenamiento, reacciones múltiples, respuestas, etiquetas por tema, paginación, respaldo y moderación de contenido.
 
 ## Historias de usuario implementadas
 
@@ -58,6 +58,10 @@ Como estudiante, quiero ver las publicaciones por páginas para navegar cómodam
 
 Como estudiante, quiero descargar y restaurar un respaldo para proteger la información de la red social.
 
+### Historia 20: Reportar y moderar contenido
+
+Como estudiante, quiero reportar una publicación inapropiada para que pueda revisarse sin eliminarla inmediatamente.
+
 ## Funcionalidades implementadas
 
 - Campo para escribir el nombre del estudiante.
@@ -111,6 +115,11 @@ Como estudiante, quiero descargar y restaurar un respaldo para proteger la infor
 - Confirmación antes de reemplazar las publicaciones actuales.
 - Aviso ante un archivo inválido, conservando la información actual.
 - Actualización inmediata de la interfaz al importar, con los datos guardados en LocalStorage.
+- Acción para reportar una publicación por Spam, contenido Ofensivo u Otro motivo.
+- Distintivo visible sin ocultar automáticamente la publicación reportada.
+- Vista de Moderación con las publicaciones pendientes y sus motivos.
+- Descarte de reportes sin eliminar contenido y eliminación moderada con confirmación.
+- Persistencia de reportes dentro de la publicación correspondiente.
 - Diseño adaptable para computadoras y teléfonos.
 
 ## Tecnologías utilizadas
@@ -213,6 +222,12 @@ Para ejecutar las pruebas mínimas de la Historia 19:
 node tests/h19.test.js
 ```
 
+Para ejecutar las pruebas mínimas de la Historia 20:
+
+```bash
+node tests/h20.test.js
+```
+
 ## Repositorio
 
 ```bash
@@ -221,7 +236,7 @@ git clone https://github.com/Doosu03/RedSocial.git
 
 ## Estado del proyecto
 
-Historias 1, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18 y 19 completadas.
+Historias 1, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 y 20 completadas.
 
 ## Autores
 1. Kevin Núñez.
