@@ -3,6 +3,7 @@ const CLAVE_LOCAL_STORAGE = "publicacionesRedSocial";
 const CLAVE_BORRADOR_PUBLICACION = "borradorPublicacionRedSocial";
 const LIMITE_CARACTERES_MENSAJE = 200;
 const LIMITE_CARACTERES_COMENTARIO = 250;
+const PUBLICACIONES_POR_PAGINA = 5;
 const ETIQUETAS_PUBLICACION = [
     "General",
     "Estudio",
@@ -91,6 +92,32 @@ const totalComentarios = document.getElementById(
     "total-comentarios"
 );
 
+const paginacion = document.getElementById("paginacion");
+
+const botonPaginaAnterior = document.getElementById(
+    "pagina-anterior"
+);
+
+const botonPaginaSiguiente = document.getElementById(
+    "pagina-siguiente"
+);
+
+const indicadorPagina = document.getElementById(
+    "indicador-pagina"
+);
+
+const botonExportarRespaldo = document.getElementById(
+    "exportar-respaldo"
+);
+
+const campoImportarRespaldo = document.getElementById(
+    "importar-respaldo"
+);
+
+const mensajeRespaldo = document.getElementById(
+    "mensaje-respaldo"
+);
+
 
 // Cargar las publicaciones guardadas
 
@@ -116,6 +143,9 @@ let criterioEtiqueta = "Todas";
 
 // El filtro de favoritas inicia mostrando todas las publicaciones
 let mostrarSoloFavoritas = false;
+
+// La lista siempre inicia en la primera página
+let paginaActual = 1;
 
 cargarBorradorPublicacion();
 
@@ -213,6 +243,8 @@ formulario.addEventListener("submit", function (evento) {
     // Quitar la búsqueda para que la nueva publicación se vea
 
     reiniciarBusqueda();
+
+    reiniciarPaginacion();
 
 
     // Mostrar nuevamente todas las publicaciones
@@ -313,6 +345,8 @@ campoBusqueda.addEventListener("input", function () {
 
     terminoBusqueda = campoBusqueda.value;
 
+    reiniciarPaginacion();
+
     mostrarPublicaciones();
 });
 
@@ -325,6 +359,8 @@ formularioBusqueda.addEventListener("submit", function (evento) {
 
     terminoBusqueda = campoBusqueda.value;
 
+    reiniciarPaginacion();
+
     mostrarPublicaciones();
 });
 
@@ -334,6 +370,8 @@ formularioBusqueda.addEventListener("submit", function (evento) {
 botonLimpiarBusqueda.addEventListener("click", function () {
 
     reiniciarBusqueda();
+
+    reiniciarPaginacion();
 
     mostrarPublicaciones();
 
@@ -347,6 +385,8 @@ selectorOrden.addEventListener("change", function () {
 
     criterioOrden = selectorOrden.value;
 
+    reiniciarPaginacion();
+
     mostrarPublicaciones();
 });
 
@@ -357,6 +397,8 @@ selectorEtiqueta.addEventListener("change", function () {
 
     criterioEtiqueta = selectorEtiqueta.value;
 
+    reiniciarPaginacion();
+
     mostrarPublicaciones();
 });
 
@@ -366,6 +408,8 @@ selectorEtiqueta.addEventListener("change", function () {
 filtroFavoritas.addEventListener("change", function () {
 
     mostrarSoloFavoritas = filtroFavoritas.checked === true;
+
+    reiniciarPaginacion();
 
     mostrarPublicaciones();
 });
@@ -379,6 +423,67 @@ botonDescartarBorrador.addEventListener("click", function () {
 });
 
 
+// Retroceder una página
+
+botonPaginaAnterior.addEventListener("click", function () {
+
+    irAPagina(paginaActual - 1);
+});
+
+
+// Avanzar una página
+
+botonPaginaSiguiente.addEventListener("click", function () {
+
+    irAPagina(paginaActual + 1);
+});
+
+
+// Descargar el respaldo de las publicaciones
+
+botonExportarRespaldo.addEventListener("click", function () {
+
+    exportarRespaldo();
+});
+
+
+// Leer el archivo elegido para restaurar un respaldo
+
+campoImportarRespaldo.addEventListener("change", function () {
+
+    const archivos = campoImportarRespaldo.files;
+
+    if (archivos === undefined || archivos.length === 0) {
+        return;
+    }
+
+
+    const lector = new FileReader();
+
+    lector.onload = function () {
+
+        importarRespaldo(lector.result);
+
+
+        // Permite volver a elegir el mismo archivo
+
+        campoImportarRespaldo.value = "";
+    };
+
+    lector.onerror = function () {
+
+        mostrarMensajeRespaldo(
+            "No se pudo leer el archivo seleccionado.",
+            true
+        );
+
+        campoImportarRespaldo.value = "";
+    };
+
+    lector.readAsText(archivos[0]);
+});
+
+
 // Dejar el campo de búsqueda vacío
 
 function reiniciarBusqueda() {
@@ -386,6 +491,112 @@ function reiniciarBusqueda() {
     campoBusqueda.value = "";
 
     terminoBusqueda = "";
+}
+
+
+// Buscar, filtrar u ordenar siempre empieza en la primera página
+
+function reiniciarPaginacion() {
+
+    paginaActual = 1;
+}
+
+
+// Cantidad de páginas necesarias para las publicaciones visibles
+
+function calcularTotalPaginas(cantidadVisible) {
+
+    if (cantidadVisible === 0) {
+        return 1;
+    }
+
+    return Math.ceil(cantidadVisible / PUBLICACIONES_POR_PAGINA);
+}
+
+
+// Volver a una página válida cuando la actual ya no existe
+
+function corregirPaginaActual(cantidadVisible) {
+
+    const totalPaginas = calcularTotalPaginas(cantidadVisible);
+
+    if (paginaActual > totalPaginas) {
+        paginaActual = totalPaginas;
+    }
+
+    if (paginaActual < 1) {
+        paginaActual = 1;
+    }
+
+    return totalPaginas;
+}
+
+
+// Recortar la lista visible a las publicaciones de la página actual
+
+function obtenerPublicacionesDeLaPagina(publicacionesVisibles) {
+
+    corregirPaginaActual(publicacionesVisibles.length);
+
+    const inicio =
+        (paginaActual - 1) * PUBLICACIONES_POR_PAGINA;
+
+    // Solo se recorta la lista: las publicaciones no se modifican
+
+    return publicacionesVisibles.slice(
+        inicio,
+        inicio + PUBLICACIONES_POR_PAGINA
+    );
+}
+
+
+// Cambiar de página sin salir de las páginas existentes
+
+function irAPagina(nuevaPagina) {
+
+    const totalPaginas = calcularTotalPaginas(
+        filtrarPublicaciones().length
+    );
+
+    if (nuevaPagina < 1 || nuevaPagina > totalPaginas) {
+        return;
+    }
+
+    paginaActual = nuevaPagina;
+
+    mostrarPublicaciones();
+}
+
+
+// Mostrar la página actual y desactivar los controles sin destino
+
+function actualizarControlesPaginacion(cantidadVisible) {
+
+    const totalPaginas = calcularTotalPaginas(cantidadVisible);
+
+
+    // Sin publicaciones visibles no hay nada que recorrer
+
+    if (cantidadVisible === 0) {
+
+        paginacion.style.display = "none";
+
+        indicadorPagina.textContent = "";
+
+        botonPaginaAnterior.disabled = true;
+        botonPaginaSiguiente.disabled = true;
+
+        return;
+    }
+
+
+    paginacion.style.display = "flex";
+
+    indicadorPagina.textContent =
+        `Página ${paginaActual} de ${totalPaginas}`;
+
+    botonPaginaAnterior.disabled = paginaActual === 1;
+    botonPaginaSiguiente.disabled = paginaActual === totalPaginas;
 }
 
 
@@ -744,6 +955,236 @@ function actualizarResumenActividad() {
     totalMeEncanta.textContent = resumen.meEncanta;
     totalMeDivierte.textContent = resumen.meDivierte;
     totalComentarios.textContent = resumen.comentarios;
+}
+
+
+// Escribir el aviso del respaldo en singular o en plural
+
+function describirRespaldo(accionSingular, accionPlural, cantidad) {
+
+    return cantidad === 1
+        ? `${accionSingular} 1 publicación.`
+        : `${accionPlural} ${cantidad} publicaciones.`;
+}
+
+
+// Avisar el resultado de exportar o importar un respaldo
+
+function mostrarMensajeRespaldo(texto, esError) {
+
+    mensajeRespaldo.textContent = texto;
+
+    if (esError) {
+
+        mensajeRespaldo.classList.add("mensaje-respaldo-error");
+        mensajeRespaldo.classList.remove("mensaje-respaldo-exito");
+
+        return;
+    }
+
+    mensajeRespaldo.classList.add("mensaje-respaldo-exito");
+    mensajeRespaldo.classList.remove("mensaje-respaldo-error");
+}
+
+
+// Nombrar el archivo con la fecha en que se descarga
+
+function crearNombreDeRespaldo() {
+
+    const fecha = new Date().toISOString().slice(0, 10);
+
+    return `respaldo-red-social-${fecha}.json`;
+}
+
+
+// Descargar todas las publicaciones con sus datos relacionados
+
+function exportarRespaldo() {
+
+    const respaldo = {
+        aplicacion: "Red Social",
+        version: 1,
+        fecha: new Date().toISOString(),
+        publicaciones: publicaciones
+    };
+
+    const contenido = JSON.stringify(respaldo, null, 2);
+
+    const archivo = new Blob([contenido], {
+        type: "application/json"
+    });
+
+    const direccion = URL.createObjectURL(archivo);
+
+    const enlace = document.createElement("a");
+
+    enlace.href = direccion;
+    enlace.download = crearNombreDeRespaldo();
+
+    enlace.click();
+
+    URL.revokeObjectURL(direccion);
+
+
+    mostrarMensajeRespaldo(
+        describirRespaldo(
+            "Se exportó",
+            "Se exportaron",
+            publicaciones.length
+        ),
+        false
+    );
+}
+
+
+// Sacar la lista de publicaciones de un respaldo
+
+function obtenerListaDelRespaldo(datos) {
+
+    // Respaldo descargado por la aplicación
+
+    if (
+        datos !== null &&
+        typeof datos === "object" &&
+        Array.isArray(datos.publicaciones)
+    ) {
+        return datos.publicaciones;
+    }
+
+
+    // Archivo que solo contiene el arreglo de publicaciones
+
+    if (Array.isArray(datos)) {
+        return datos;
+    }
+
+    return null;
+}
+
+
+// Revisar que un elemento del respaldo sea una publicación
+
+function esPublicacionDeRespaldo(publicacion) {
+
+    if (
+        publicacion === null ||
+        typeof publicacion !== "object" ||
+        Array.isArray(publicacion)
+    ) {
+        return false;
+    }
+
+    return (
+        publicacion.id !== undefined &&
+        typeof publicacion.nombre === "string" &&
+        typeof publicacion.mensaje === "string"
+    );
+}
+
+
+// Convertir el texto del archivo en publicaciones utilizables
+
+function leerRespaldo(contenido) {
+
+    let datos;
+
+    try {
+        datos = JSON.parse(contenido);
+
+    } catch (error) {
+
+        // El archivo no contiene JSON
+
+        return null;
+    }
+
+
+    const listaGuardada = obtenerListaDelRespaldo(datos);
+
+    if (listaGuardada === null) {
+        return null;
+    }
+
+
+    const todasSonPublicaciones = listaGuardada.every(
+        esPublicacionDeRespaldo
+    );
+
+    if (!todasSonPublicaciones) {
+        return null;
+    }
+
+
+    // Se completan los datos que falten, igual que al recargar
+
+    return listaGuardada.map(normalizarPublicacion);
+}
+
+
+// Reemplazar las publicaciones actuales con las del respaldo
+
+function importarRespaldo(contenido) {
+
+    const publicacionesDelRespaldo = leerRespaldo(contenido);
+
+
+    // Un archivo inválido conserva las publicaciones actuales
+
+    if (publicacionesDelRespaldo === null) {
+
+        mostrarMensajeRespaldo(
+            "El archivo no es un respaldo válido. " +
+            "No se modificó ninguna publicación.",
+            true
+        );
+
+        return false;
+    }
+
+
+    const confirmarImportacion = window.confirm(
+        "¿Deseas reemplazar las publicaciones actuales " +
+        "con las del respaldo?"
+    );
+
+    if (!confirmarImportacion) {
+
+        mostrarMensajeRespaldo(
+            "Se canceló la importación. " +
+            "No se modificó ninguna publicación.",
+            false
+        );
+
+        return false;
+    }
+
+
+    publicaciones = publicacionesDelRespaldo;
+
+
+    // Los formularios abiertos pertenecen a publicaciones que ya no existen
+
+    idPublicacionEnEdicion = null;
+    comentarioEnEdicion = null;
+    respuestaEnCreacion = null;
+
+    reiniciarPaginacion();
+
+    guardarPublicaciones();
+
+    mostrarPublicaciones();
+
+
+    mostrarMensajeRespaldo(
+        describirRespaldo(
+            "Se importó",
+            "Se importaron",
+            publicaciones.length
+        ),
+        false
+    );
+
+    return true;
 }
 
 
@@ -1130,12 +1571,17 @@ function mostrarPublicaciones() {
 
     actualizarMensajesDeLista(publicacionesVisibles.length);
 
-    if (publicacionesVisibles.length === 0) {
+    const publicacionesDeLaPagina =
+        obtenerPublicacionesDeLaPagina(publicacionesVisibles);
+
+    actualizarControlesPaginacion(publicacionesVisibles.length);
+
+    if (publicacionesDeLaPagina.length === 0) {
         return;
     }
 
 
-    publicacionesVisibles.forEach(function (publicacion) {
+    publicacionesDeLaPagina.forEach(function (publicacion) {
 
         const articulo =
             document.createElement("article");

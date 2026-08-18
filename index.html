@@ -260,6 +260,80 @@
                 class="lista-publicaciones"
             ></div>
 
+            <nav
+                id="paginacion"
+                class="paginacion"
+                aria-label="Paginación de publicaciones"
+            >
+
+                <button
+                    type="button"
+                    id="pagina-anterior"
+                    class="boton-pagina"
+                >
+                    Anterior
+                </button>
+
+                <span
+                    id="indicador-pagina"
+                    class="indicador-pagina"
+                    aria-live="polite"
+                ></span>
+
+                <button
+                    type="button"
+                    id="pagina-siguiente"
+                    class="boton-pagina"
+                >
+                    Siguiente
+                </button>
+
+            </nav>
+
+        </section>
+
+        <section class="tarjeta seccion-respaldo">
+
+            <h2>Respaldo</h2>
+
+            <p class="descripcion-respaldo">
+                Descarga una copia de las publicaciones o restaura
+                una copia guardada.
+            </p>
+
+            <div class="acciones-respaldo">
+
+                <button
+                    type="button"
+                    id="exportar-respaldo"
+                    class="boton-exportar"
+                >
+                    Exportar respaldo
+                </button>
+
+                <div class="campo-respaldo">
+
+                    <label for="importar-respaldo">
+                        Importar respaldo
+                    </label>
+
+                    <input
+                        type="file"
+                        id="importar-respaldo"
+                        name="importar-respaldo"
+                        accept="application/json,.json"
+                    >
+
+                </div>
+
+            </div>
+
+            <small
+                id="mensaje-respaldo"
+                class="mensaje-respaldo"
+                aria-live="polite"
+            ></small>
+
         </section>
 
     </main>

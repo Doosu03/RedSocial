@@ -2,7 +2,7 @@
 
 Proyecto académico desarrollado con HTML, CSS y JavaScript.
 
-Actualmente el proyecto implementa las historias 1, 3, 4 y 6 a 15, incluida la edición de publicaciones y comentarios, búsqueda, ordenamiento, reacciones múltiples, respuestas y etiquetas por tema.
+Actualmente el proyecto implementa las historias 1, 3, 4 y 6 a 19, incluida la edición de publicaciones y comentarios, búsqueda, ordenamiento, reacciones múltiples, respuestas, etiquetas por tema, paginación de la lista y respaldo de la información.
 
 ## Historias de usuario implementadas
 
@@ -50,6 +50,14 @@ Como estudiante, quiero responder un comentario para continuar una conversación
 
 Como estudiante, quiero asignar un tema a mi publicación para organizar y encontrar contenido relacionado.
 
+### Historia 18: Paginación de publicaciones
+
+Como estudiante, quiero ver las publicaciones por páginas para navegar cómodamente cuando existe mucho contenido.
+
+### Historia 19: Exportar e importar un respaldo
+
+Como estudiante, quiero descargar y restaurar un respaldo para proteger la información de la red social.
+
 ## Funcionalidades implementadas
 
 - Campo para escribir el nombre del estudiante.
@@ -93,6 +101,16 @@ Como estudiante, quiero asignar un tema a mi publicación para organizar y encon
 - Filtro por tema compatible con la búsqueda y el ordenamiento.
 - Migración de publicaciones antiguas sin etiqueta al tema General.
 - Conservación de la etiqueta al recargar la página.
+- Lista dividida en páginas de cinco publicaciones como máximo.
+- Controles “Anterior” y “Siguiente” con el indicador de la página actual.
+- Desactivación de “Anterior” en la primera página y de “Siguiente” en la última.
+- Recálculo de las páginas al buscar, filtrar por tema o favoritas y ordenar.
+- Regreso automático a una página válida al eliminar publicaciones.
+- Descarga de un archivo JSON con todas las publicaciones y sus datos relacionados.
+- Restauración de un respaldo desde un archivo JSON seleccionado.
+- Confirmación antes de reemplazar las publicaciones actuales.
+- Aviso ante un archivo inválido, conservando la información actual.
+- Actualización inmediata de la interfaz al importar, con los datos guardados en LocalStorage.
 - Diseño adaptable para computadoras y teléfonos.
 
 ## Tecnologías utilizadas
@@ -183,6 +201,18 @@ Para ejecutar las pruebas mínimas de la Historia 15:
 node tests/h15.test.js
 ```
 
+Para ejecutar las pruebas mínimas de la Historia 18:
+
+```bash
+node tests/h18.test.js
+```
+
+Para ejecutar las pruebas mínimas de la Historia 19:
+
+```bash
+node tests/h19.test.js
+```
+
 ## Repositorio
 
 ```bash
@@ -191,7 +221,7 @@ git clone https://github.com/Doosu03/RedSocial.git
 
 ## Estado del proyecto
 
-Historias 1, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14 y 15 completadas.
+Historias 1, 3, 4, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18 y 19 completadas.
 
 ## Autores
 1. Kevin Núñez.

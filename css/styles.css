@@ -216,6 +216,81 @@ textarea:focus,
     transform: scale(0.98);
 }
 
+/* Respaldo */
+
+.seccion-respaldo {
+    margin-top: 24px;
+}
+
+.seccion-respaldo h2 {
+    margin-bottom: 8px;
+    font-size: 24px;
+}
+
+.descripcion-respaldo {
+    margin-bottom: 18px;
+    color: #6b7280;
+}
+
+.acciones-respaldo {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: end;
+    gap: 16px;
+}
+
+.boton-exportar {
+    padding: 13px 18px;
+
+    background-color: #3159c7;
+    color: #ffffff;
+
+    border: none;
+    border-radius: 10px;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    transition:
+        background-color 0.2s,
+        transform 0.2s;
+}
+
+.boton-exportar:hover {
+    background-color: #2447a8;
+}
+
+.boton-exportar:active {
+    transform: scale(0.99);
+}
+
+.campo-respaldo input {
+    padding: 10px 12px;
+    font-size: 14px;
+
+    cursor: pointer;
+}
+
+.mensaje-respaldo {
+    display: block;
+    min-height: 18px;
+    margin-top: 12px;
+
+    font-size: 14px;
+}
+
+.mensaje-respaldo-exito {
+    color: #15803d;
+}
+
+.mensaje-respaldo-error {
+    color: #dc2626;
+}
+
 /* Publicaciones */
 
 .seccion-publicaciones {
@@ -398,6 +473,64 @@ textarea:focus,
     gap: 14px;
 }
 
+/* Paginación */
+
+.paginacion {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+
+    margin-top: 18px;
+    padding-top: 16px;
+
+    border-top: 1px solid #dfe5ec;
+}
+
+.boton-pagina {
+    padding: 9px 16px;
+
+    background-color: #e8efff;
+    color: #3159c7;
+
+    border: 1px solid #c9d7ff;
+    border-radius: 8px;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition:
+        background-color 0.2s,
+        transform 0.2s;
+}
+
+.boton-pagina:hover:not(:disabled) {
+    background-color: #d6e2ff;
+}
+
+.boton-pagina:active:not(:disabled) {
+    transform: scale(0.96);
+}
+
+.boton-pagina:disabled {
+    background-color: #f1f5f9;
+    color: #9ca3af;
+
+    border-color: #e2e8f0;
+
+    cursor: not-allowed;
+}
+
+.indicador-pagina {
+    color: #4b5563;
+    font-size: 14px;
+    font-weight: bold;
+
+    white-space: nowrap;
+}
+
 .publicacion {
     padding: 18px;
 
@@ -545,6 +678,11 @@ textarea:focus,
 
     .acciones-formulario {
         grid-template-columns: 1fr;
+    }
+
+    .acciones-respaldo {
+        grid-template-columns: 1fr;
+        align-items: stretch;
     }
 
     .encabezado h1 {
@@ -991,6 +1129,14 @@ textarea:focus,
     .control-orden select,
     .control-etiqueta select {
         width: 100%;
+    }
+
+    .paginacion {
+        gap: 10px;
+    }
+
+    .boton-pagina {
+        flex: 1;
     }
 
     .encabezado-publicacion {
